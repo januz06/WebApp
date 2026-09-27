@@ -175,9 +175,15 @@ function buildShapes(){
     const [cName,cHex] = COLORS[Math.floor(Math.random()*COLORS.length)];
     if(askColor){
       const target = shapeChoice[0];
+      // Pick 3 other unique colors that differ from the target color
+      const otherColors = shuffle(COLORS.filter(c => c[1] !== cHex)).slice(0,3);
+      const optionsHTML = shuffle(shapeChoice.map((s,idx)=>{
+        // Target shape gets the target color, others get unique alternate colors
+        const color = idx === 0 ? cHex : otherColors[idx-1][1];
+        return { name: s.name, color };
+      }));
       return { prompt:`Click the <span style="color:${cHex}">${cName}</span> shape`, stageHTML:"",
-        optionsHTML: shuffle(shapeChoice.map((s,idx)=>({name:s.name, color: idx===0?cHex:COLORS[(idx+1)%COLORS.length][1]}))),
-        isShapeQ:true, answer: target.name, _key:`c_${cName}_${target.name}` };
+        optionsHTML, isShapeQ:true, answer: target.name, _key:`c_${cName}_${target.name}` };
     }
     const target = shapeChoice[0];
     return { prompt:`Click the ${target.name}`, stageHTML:"",
@@ -310,7 +316,18 @@ function buildEnglish(difficulty){
     ...synonymQuestions(level),
     ...ENGLISH_EXTRA.filter(q=>q.level===level).map(q=>({...q, options:shuffle(q.options), _key:q.prompt}))
   ];
-  return shuffle(pool).slice(0, QUESTIONS_PER_SET).map(q=>({prompt:q.prompt, stageHTML:"", options:shuffle(q.options), answer:q.answer}));
+  
+  // Deduplicate the pool based on _key or prompt
+  const seen = new Set();
+  const uniquePool = pool.filter(q => {
+    const key = q._key || q.prompt;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return shuffle(uniquePool).slice(0, QUESTIONS_PER_SET)
+    .map(q => ({ prompt: q.prompt, stageHTML: "", options: shuffle(q.options), answer: q.answer }));
 }
 
 const SCIENCE_POOL = [
@@ -377,8 +394,18 @@ const SCIENCE_POOL = [
 ];
 function buildScience(difficulty){
   const level = difficulty || "medium";
-  return shuffle(SCIENCE_POOL.filter(q=>q.level===level)).slice(0, QUESTIONS_PER_SET)
-    .map(q=>({prompt:q.prompt, stageHTML:"", options:shuffle(q.options), answer:q.answer}));
+  const filtered = SCIENCE_POOL.filter(q => q.level === level);
+  
+  // Deduplicate the pool based on prompt
+  const seen = new Set();
+  const uniquePool = filtered.filter(q => {
+    if (seen.has(q.prompt)) return false;
+    seen.add(q.prompt);
+    return true;
+  });
+
+  return shuffle(uniquePool).slice(0, QUESTIONS_PER_SET)
+    .map(q => ({ prompt: q.prompt, stageHTML: "", options: shuffle(q.options), answer: q.answer }));
 }
 
 /* ---------------- Render ---------------- */
@@ -409,7 +436,8 @@ function profileSelectHTML(){
     <button class="card profile-card" style="--c:var(--violet)" data-id="${p.id}">
       <span class="avatar-circle">${p.avatar}</span>
       <div><h3>${p.name}</h3><span class="tag">${(p.history||[]).length} sessions</span></div>
-    </button>`).join("");
+    </button>
+    <button class="back" style="margin-top:-10px;margin-bottom:14px;font-size:.8rem;padding:6px 10px" data-edit="${p.id}">✏️ Edit</button>`).join("");
   return `
     <div class="home-head">
       <h1>Learning Adventures</h1>
@@ -429,6 +457,16 @@ function attachProfileSelect(){
   });
   const nb = document.getElementById('newProfileBtn');
   if(nb) nb.addEventListener('click', ()=>{ profileDraft = { name:"", avatar: ANIMAL_AVATARS[0], ageGroup: null }; focusNameOnRender = true; render(); });
+  document.querySelectorAll('[data-edit]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const p = profiles.find(x=>x.id===btn.dataset.edit);
+      if(!p) return;
+      profileDraft = { id: p.id, name: p.name, avatar: p.avatar, ageGroup: p.ageGroup };
+      focusNameOnRender = true;
+      render();
+    });
+  });
 }
 
 function addProfileHTML(){
@@ -443,14 +481,14 @@ function addProfileHTML(){
   const canSave = profileDraft.ageGroup ? "" : "disabled";
   return `
     <div class="topbar">${backBtn}</div>
-    <div class="home-head"><h1>New profile</h1><p>Name, avatar, and age level</p></div>
+    <div class="home-head"><h1>${profileDraft.id ? 'Edit profile' : 'New profile'}</h1><p>Name, avatar, and age level</p></div>
     <p class="field-label">Name</p>
     <input class="field" id="nameInput" maxlength="16" placeholder="e.g. Emma" value="${profileDraft.name}">
     <p class="field-label" style="margin-top:14px">Avatar</p>
     <div class="avatar-grid">${avatars}</div>
     <p class="field-label" style="margin-top:14px">Age level</p>
     <div class="grid" style="margin-bottom:20px">${ageCards}</div>
-    <button class="next-btn" id="saveProfileBtn" style="background:var(--violet)" ${canSave}>Create profile</button>
+    <button class="next-btn" id="saveProfileBtn" style="background:var(--violet)" ${canSave}>${profileDraft.id ? 'Save changes' : 'Create profile'}</button>
   `;
 }
 function attachAddProfile(){
@@ -468,11 +506,16 @@ function attachAddProfile(){
   saveBtn.addEventListener('click', ()=>{
     if(!profileDraft.ageGroup) return;
     const name = (profileDraft.name || "").trim() || "Learner";
-    const p = { id: 'p_' + Date.now() + Math.floor(Math.random()*1000), name, avatar: profileDraft.avatar, ageGroup: profileDraft.ageGroup, history: [] };
-    profiles.push(p);
+    if(profileDraft.id){
+      const p = profiles.find(x=>x.id===profileDraft.id);
+      if(p){ p.name = name; p.avatar = profileDraft.avatar; p.ageGroup = profileDraft.ageGroup; }
+    } else {
+      const p = { id: 'p_' + Date.now() + Math.floor(Math.random()*1000), name, avatar: profileDraft.avatar, ageGroup: profileDraft.ageGroup, history: [] };
+      profiles.push(p);
+      setActiveProfile(p.id);
+    }
     persist();
     profileDraft = null;
-    setActiveProfile(p.id);
     render();
   });
   if(focusNameOnRender){ nameInput.focus(); focusNameOnRender = false; }
