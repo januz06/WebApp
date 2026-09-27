@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Learning Adventures</title>
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTGVhcm5pbmcgQWR2ZW50dXJlcyIsInNob3J0X25hbWUiOiJMZWFybmluZyIsImRlc2NyaXB0aW9uIjoiSW50ZXJhY3RpdmUgd29ya3NoZWV0cyBmb3IgZWFybHkgbGVhcm5lcnMiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0ZGRjlFQyIsInRoZW1lX2NvbG9yIjoiIzhCNUNGNiIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQUxRQUFBQzBDQVlBQUFBOXpRWXlBQUFEYzBsRVFWUjRuTzNaVFc0YVdRQkcwUUpGaXRyem52YktMSGtUN1NYMHlNb3E0alU2czVCQksxRitzRjFRVlZSeE9XY0J4UnRjUGg2d0d6Ymc2Zjdsc1BZWm1PN3grVzYzOWhsV09ZQ0FiOE1hZ1Yvc0JVVjgyeTRWOTZJdkltS09XVEx1UlI0c1pNWllJdXo5M0E4VU0yTXQwY3BzN3hBaE04VmNhejNMUW91WnFlWnFhTks3UXNnc1ljcGFuNzNRWW1ZcFU5bzZLMmd4czdSekd6czVhREZ6S2VlMGRsTFFZdWJTVG0xdWROQmlaaTJudERjcWFER3p0ckVOdmh1MG1ObUtNUzNPL3RjM3JPbk5vSzB6Vy9OZWs2OEdMV2EyNnEwMlhUbElPUnEwZFdiclhtdjBqNkRGekxVNDFxb3JCeW0vQkcyZHVUYS9OMnVoU1JFMEtUK0NkdDNnV3YzY3JvVW1SZENrN0lmQmRZUHI5NzFoQzAyS29Fa1JOQ2s3OTJkS0xEUXBnaVpGMEtRSW1oUkJreUpvVWdSTmlxQkpFVFFwZ2laRjBLUUltaFJCa3lKb1VnUk5pcUJKK2JEMkFiYms0YitQdzkvL1RIK1BINzRPdzZlSEx6T2NpRk5aYUZJRVRZcWdTUkUwS1lJbVJkQ2tDSm9VUVpNaWFGSUVUWXFnU1JFMEtZSW1SZENrQ0pvVVFaTWlhRklFVFlxZ1NSRTBLWUltUmRDa0NKb1VRWk1pYUZJRVRZcWdTUkUwS1lJbVJkQ2tDSm9VUVpNaWFGSUVUWXFnU1JFMEtZSW1SZENrQ0pvVVFaTWlhRklFVFlxZ1NSRTBLWUltUmRDa0NKb1VRWk1pYUZJRVRZcWdTUkUwS1lJbVJkQ2tDSm9VUVpNaWFGSUVUY3FIdFE5UXROc1B3NytmLzFyMURJZXZ3L0RwNGN1cVoxaURoU1pGMEtRSW1oUkJreUpvVWdSTmlxQkpFVFFwZ2laRjBLUUltaFJCa3lKb1VuWlA5eStIdFE4QmM3SFFwQWlhRkVHVEltaFNCRTJLb0VrUk5DbUNKa1hRcEFpYUZFR1RJbWhTQkUyS29Fa1JOQ21DSmtYUXBBaWFGRUdUSW1oU0JFMktvRWtSTkNuN3grZTczZHFIZ0RrOFB0L3RMRFFwZ2laRjBLVHNoK0gvdThmYUI0RXB2amRzb1VrUk5Day9nbmJ0NEZyOTNLNkZKa1hRcFB3U3RHc0gxK2IzWmkwMEtYOEViYVc1RnNkYVBiclFvbWJyWG12VWxZT1VWNE8yMG16VlcyMit1ZENpWm12ZWE5S1ZnNVIzZzdiU2JNV1lGa2N0dEtoWjI5Z0dSMTg1Uk0xYVRtbnZwRHUwcUxtMFU1czcrVXVocUxtVWMxbzc2MWNPVWJPMGN4czcrMmM3VWJPVUtXM05FdVhUL2N0aGp1ZHcyK1lZeVZuK1dMSFdURFZYUTdPSGFLMDV4ZHhqT1B0ZjM5YWFzWlpvWmRINHJEWEhMRGw2RjF0VGNkKzJTMzF5cjNJOUVQZHRXT1A2dVluN3JzQWJ0dkQ5NlJzZmdNZGgzdUJHM3dBQUFBQkpSVTVFcmtKZ2dnPT0iLCJzaXplcyI6IjE4MHgxODAiLCJ0eXBlIjoiaW1hZ2UvcG5nIn0seyJzcmMiOiJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQWdBQUFBSUFDQVlBQUFEMGVOVDZBQUFNYlVsRVFWUjRuTzNjVGE0Y1Z3R0c0YklWQ2VFOU1HZEhUREpnRFVnZU1XWVVpVFVnNUFsclFLeUIzUVFoSUdGZzNhUWQzNS8rcWFwenF0N25XVUgxdVZLK3QwKzE4MjVoU3Q5OSsvMlBvNThCWUEwZlAzMTROL29aK0pvL3lpQUdIdUF6Z1RDR1E5K0JzUWU0alNqWW5nUGVnTUVIV0pjZ1dKOERYWUhCQjlpWElIaWNBN3lUMFFlWWd4aTRqME83Z2RFSG1Kc1l1SjZEZW9QUkJ6Z21NZkE2aC9NQ3d3OXdEa0xnZVE3bGd0RUhPRGN4OERNSHNSaCtnQm9oRUE4QXd3L1FWZzZCNUFjMy9BQmNLb1pBNmdNYmZnQmVVd3FCeEFjMS9BRGNvaEFDNzBjL3dOYU1Qd0MzS216SGFRdW44TWNEWUh0bnZRMDQzWWN5L0FCczRXd2hjS3BYQU1ZZmdLMmNiV05PVVRObis2TUFNTGN6M0FZYy9nYkErQU93dHpOc3o2RUQ0QXgvQUFDTzZlZ2JkTWdyaktNZk9nRG5jc1JYQW9lN0FURCtBTXptaU50MHFBQTQ0Z0VEMEhDMGpUckVsY1hSRGhXQXRpTzhFcGorQnNENEEzQTBSOWl1cVFQZ0NBY0lBTStaZmNPbURZRFpEdzRBM2pMemxrMFpBRE1mR0FEY1l0Wk5teTRBWmowb0FMalhqTnMyVlFETWVFQUFzSWJaTm02YUFKanRZQUJnYlROdDNSUUJNTk9CQU1DV1p0bTg0UUV3eTBFQXdGNW0yTDZoQVREREFRREFDS00zY0ZnQWpQN2dBRERheUMwY0VnREdId0ErRzdXSnV3ZUE4UWVBTDQzWXhsMER3UGdEd1BQMjNzamRBc0Q0QThEcjl0ektYUUxBK0FQQWRmYmF6T0gvSHdBQVlIK2JCNEJ2L3dCd216MjJjOU1BTVA0QWNKK3ROM1N6QUREK0FQQ1lMYmZVYndBQUlHaVRBUER0SHdEV3NkV21yaDRBeGg4QTFyWEZ0cTRhQU1ZZkFMYXg5c2I2RFFBQUJLMFdBTDc5QThDMjF0emFWUUxBK0FQQVB0YmFYSzhBQUNEbzRRRHc3UjhBOXJYRzlyb0JBSUNnaHdMQXQzOEFHT1BSRGI0N0FJdy9BSXoxeUJaN0JRQUFRWGNGZ0cvL0FEQ0hlemZaRFFBQUJOMGNBTDc5QThCYzd0bG1Od0FBRUhSVEFQajJEd0J6dW5XajNRQUFRTkRWQWVEYlB3RE03WmF0ZGdNQUFFRlhCWUJ2L3dCd0ROZHV0aHNBQUFnU0FBQVE5R1lBdVA0SGdHTzVacnZkQUFCQTBLc0I0TnMvQUJ6VFd4dnVCZ0FBZ2dRQUFBUzlHQUN1L3dIZzJGN2JjamNBQUJBa0FBQWc2TmtBY1AwUEFPZncwcWE3QVFDQUlBRUFBRUZmQllEcmZ3QTRsK2UyM1EwQUFBUUpBQUFJRWdBQUVQUkZBSGovRHdEbjlNdU5kd01BQUVFQ0FBQ0NCQUFBQlAwVUFONy9BOEM1WFc2OUd3QUFDQklBQUJBa0FBQWdTQUFBUU5EN1pmRURRQUNvZU5wOE53QUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUzk4LzhBQUlBZU53QUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0JJQUFCQWtBQUFnQ0FCQUFCQkFnQUFnZ1FBQUFRSkFBQUlFZ0FBRUNRQUFDQklBQUJBa0FBQWdDQUJBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0JJQUFCQWtBQUFnQ0FCQUFCQkFnQUFncjRaL1FBd3l1LysrS3ZsTjc4OVh3UC8rZmYvV243NDMraW5BR1ozdnYvNkFRQnZFZ0FBRUNRQUFDQklBQUJBa0FBQWdDQUJBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0JJQUFCQWtBQUFnQ0FCQUFCQkFnQUFnZ1FBQUFRSkFBQUlFZ0FBRUNRQUFDQklBQUJBa0FBQWdDQUJBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0JJQUFCQWtBQUFnQ0FCQUFCQkFnQUFnZ1FBQUFRSkFBQUlFZ0FBRUNRQUFDQklBQUJBa0FBQWdDQUJBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0JJQUFCQWtBQUFnQ0FCQUFCQkFnQUFnZ1FBQUFRSkFBQUlFZ0FBRUNRQUFDQklBQUJBa0FBQWdDQUJBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0JJQUFCQWtBQUFnQ0FCQUFCQkFnQUFnZ1FBQUFRSkFBQUlFZ0FBRUNRQUFDQklBQUJBa0FBQWdDQUJBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0JJQUFCQWtBQUFnQ0FCQUFCQkFnQUFnZ1FBQUFRSkFBQUlFZ0FBRUNRQUFDQklBQUJBa0FBQWdDQUJBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0JJQUFCQWtBQUFnQ0FCQUFCQkFnQUFnZ1FBQUFRSkFBQUlFZ0FBRUNRQUFDQklBQUJBa0FBQWdDQUJBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0JJQUFCQWtBQUFnQ0FCQUFCQkFnQUFncjRaL1FEQXV2N3dsMStQZm9Ta2YvejFQOHMvLy83ZjBZOEJWM01EQUFCQkFnQUFnZ1FBQUFRSkFBQUlFZ0FBRUNRQUFDQklBQUJBa0FBQWdDQUJBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0JJQUFCQWtBQUFnQ0FCQUFCQkFnQUFnZ1FBQUFRSkFBQUlFZ0FBRUNRQUFDQklBQUJBa0FBQWdDQUJBQUJCQWdBQWdnUUFBQVFKQUFBSUVnQUFFQ1FBQUNCSUFBQkFrQUFBZ0tCdlJqOEFqUEszUC8xNzlDTUFET01HQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1FBQUNBSUFFQUFFRUNBQUNDQkFBQUJBa0FBQWdTQUFBUUpBQUFJRWdBQUVDUUFBQ0FJQUVBQUVFQ0FBQ0NCQUFBQkFrQUFBZ1NBQUFRSkFBQUlFZ0FBRUNRQUFDQUlBRUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1FBQUNBSUFFQUFFRUNBQUNDQkFBQUJBa0FBQWdTQUFBUUpBQUFJRWdBQUVDUUFBQ0FJQUVBQUVFQ0FBQ0NCQUFBQkFrQUFBZ1NBQUFRSkFBQUlFZ0FBRUNRQUFDQUlBRUFBRUVDQUFDQ0JBQUFCQWtBQUFnU0FBQVFKQUFBSUVnQUFFQ1FBQUNBSUFFQUFFRUNBQUNDQkFBQUJBa0FBQWg2Ly9IVGgzZWpId0lBMk0vSFR4L2V1UUVBZ0NBQkFBQkJBZ0FBZ2dRQUFBUUpBQUFJRWdBQUVDUUFBQ0RvL2JKOC92ZUFveDhFQU5qZTArYTdBUUNBSUFFQUFFRUNBQUNDQkFBQUJQMFVBSDRJQ0FEbmRybjFiZ0FBSUVnQUFFQ1FBQUNBb0M4Q3dPOEFBT0NjZnJueGJnQUFJRWdBQUVDUUFBQ0FvSzhDd084QUFPQmNudHQyTndBQUVDUUFBQ0RvMlFEd0dnQUF6dUdsVFhjREFBQkJBZ0FBZ2w0TUFLOEJBT0RZWHR0eU53QUFFQ1FBQUNEbzFRRHdHZ0FBanVtdERYY0RBQUJCYndhQVd3QUFPSlpydHRzTkFBQUVDUUFBQ0xvcUFMd0dBSUJqdUhhejNRQUFRTkRWQWVBV0FBRG1kc3RXdXdFQWdLQ2JBc0F0QUFETTZkYU5kZ01BQUVFM0I0QmJBQUNZeXozYjdBWUFBSUx1Q2dDM0FBQXdoM3MzMlEwQUFBVGRIUUJ1QVFCZ3JFZTIrS0ViQUJFQUFHTTh1c0ZlQVFCQTBNTUI0QllBQVBhMXh2YTZBUUNBb0ZVQ3dDMEFBT3hqcmMxZDdRWkFCQURBdHRiY1dxOEFBQ0JvMVFCd0N3QUEyMWg3WTFlL0FSQUJBTEN1TGJaMWsxY0FJZ0FBMXJIVnB2b05BQUFFYlJZQWJnRUE0REZiYnVtbU53QWlBQUR1cy9XR2J2NEtRQVFBd0czMjJFNi9BUUNBb0YwQ3dDMEFBRnhucjgzYzdRWkFCQURBNi9iY3lsMWZBWWdBQUhqZTNodTUrMjhBUkFBQWZHbkVOZzc1RWFBSUFJRFBSbTNpc0g4RklBSUFxQnU1aFVQL0dhQUlBS0JxOUFZTy8vOEFqRDRBQU5qYkROczNQQUNXWlk2REFJQTl6TEo1VXdUQXNzeHpJQUN3bFptMmJwb0FXSmE1RGdZQTFqVGJ4azBWQU1zeTN3RUJ3S05tM0xicEFtQlo1andvQUxqSHJKczJaUUFzeTd3SEJnRFhtbm5McGcyQVpabjc0QURnTmJOdjJOUUJzQ3p6SHlBQS9OSVJ0bXY2Qjd6MDNiZmYvemo2R1FEZ0pVY1kvaWZUM3dCY090TEJBdEJ5dEkwNlZBQXN5L0VPR0lEek8rSTJIZTZCTDNrbEFNQklSeHorSjRlN0FiaDA1SU1INE5pT3ZrR0hEb0JsT2Y0ZkFJRGpPY1AySFA0RFhQSktBSUF0bldING54eitCdURTbWY0d0FNemxiQnR6cWc5enlXMEFBR3M0Mi9BL09lV0h1aVFFQUxqSFdZZi95YWxlQVR6bjdIOUFBTlpYMkk3VGY4QkxiZ01BZUUxaCtKOWtQdWdsSVFEQXBkTHdQOGw5NEV0Q0FLQ3RPUHhQc2gvOGtoQUFhQ2tQLzVQOEFWd1NBZ0RuWnZoLzVpQmVJQVlBenNIb1A4K2h2RUVJQUJ5VDRYK2R3N21CR0FDWW05Ry9ub082a3hnQW1JUFJ2NDlEVzRFWUFOaVgwWCtjQTl5QUlBQllsOEZmbndQZGdTQUF1STNCMzU0REhrUVVBSHhtN01kdzZKTVNDTUJaR1BnNS9SK084Q0pESnpoelNnQUFBQUJKUlU1RXJrSmdnZz09Iiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifV19">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAADc0lEQVR4nO3ZTW4aWQBG0QJFitrznvbKLHkT7SX0yMoq4jU6s5BBK1F+sF1QVVRxOWcBxRtcPh6wGzbg6f7lsPYZmO7x+W639hlWOYCAb8MagV/sBUV82y4V96IvImKOWTLuRR4sZMZYIuz93A8UM2Mt0cps7xAhM8Vcaz3LQouZqeZqaNK7QsgsYcpan73QYmYpU9o6K2gxs7RzGzs5aDFzKee0dlLQYubSTm1udNBiZi2ntDcqaDGztrENvhu0mNmKMS3O/tc3rOnNoK0zW/Nek68GLWa26q02XTlIORq0dWbrXmv0j6DFzLU41qorBym/BG2duTa/N2uhSRE0KT+Cdt3gWv3croUmRdCk7IfBdYPr971hC02KoEkRNCk792dKLDQpgiZF0KQImhRBkyJoUgRNiqBJETQpgiZF0KQImhRBkyJoUgRNiqBJ+bD2Abbk4b+Pw9//TH+PH74Ow6eHLzOciFNZaFIETYqgSRE0KYImRdCkCJoUQZMiaFIETYqgSRE0KYImRdCkCJoUQZMiaFIETYqgSRE0KYImRdCkCJoUQZMiaFIETYqgSRE0KYImRdCkCJoUQZMiaFIETYqgSRE0KYImRdCkCJoUQZMiaFIETYqgSRE0KYImRdCkCJoUQZMiaFIETYqgSRE0KYImRdCkCJoUQZMiaFIETcqHtQ9QtNsPw7+f/1r1DIevw/Dp4cuqZ1iDhSZF0KQImhRBkyJoUgRNiqBJETQpgiZF0KQImhRBkyJoUnZP9y+HtQ8Bc7HQpAiaFEGTImhSBE2KoEkRNCmCJkXQpAiaFEGTImhSBE2KoEkRNCmCJkXQpAiaFEGTImhSBE2KoEkRNCn7x+e73dqHgDk8Pt/tLDQpgiZF0KTsh+H/u8faB4EpvjdsoUkRNCk/gnbt4Fr93K6FJkXQpPwStGsH1+b3Zi00KX8EbaW5FsdaPbrQombrXmvUlYOUV4O20mzVW22+udCiZmvea9KVg5R3g7bSbMWYFkcttKhZ29gGR185RM1aTmnvpDu0qLm0U5s7+UuhqLmUc1o761cOUbO0cxs7+2c7UbOUKW3NEuXT/cthjudw2+YYyVn+WLHWTDVXQ7OHaK05xdxjOPtf39aasZZoZdH4rDXHLDl6F1tTcd+2S31yr3I9EPdtWOP6uYn7rsAbtvD96RsfgMdh3uBG3wAAAABJRU5ErkJggg==">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Learning">
+<meta name="theme-color" content="#8B5CF6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFF9EC;
+    --ink:#3A2E39;
+    --card:#FFFFFF;
+    --coral:#FF6F59;
+    --teal:#1FAE9C;
+    --violet:#8B5CF6;
+    --amber:#F4A100;
+    --sky:#3B82C4;
+    --leaf:#2FA84F;
+    --line:#EFE6D2;
+    --muted:#8b7d92;
+    --feedback-good-bg:#DCF6EC; --feedback-good-ink:#0d7a67;
+    --feedback-bad-bg:#FDE3E0; --feedback-bad-ink:#b8392a;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#211C28; --ink:#F3ECFB; --card:#2E2739; --line:#453C54; --muted:#a89bb3;
+      --feedback-good-bg:#12332C; --feedback-good-ink:#6FE0C6;
+      --feedback-bad-bg:#3A2020; --feedback-bad-ink:#F0928A;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#211C28; --ink:#F3ECFB; --card:#2E2739; --line:#453C54; --muted:#a89bb3;
+    --feedback-good-bg:#12332C; --feedback-good-ink:#6FE0C6;
+    --feedback-bad-bg:#3A2020; --feedback-bad-ink:#F0928A;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Nunito',sans-serif;
+    min-height:100%;
+    display:flex;
+    justify-content:center;
+  }
+  h1,h2,h3,.disp{font-family:'Baloo 2',cursive;}
+  #app{width:100%;max-width:min(640px, 94vw);padding:clamp(18px,4vw,32px) clamp(14px,3vw,24px) 40px;}
+
+  .home-head{text-align:center;margin-bottom:22px;}
+  .home-head h1{font-size:clamp(1.6rem,5vw,2.3rem);margin:0 0 6px;color:var(--ink);font-weight:800;}
+  .home-head p{margin:0;font-size:clamp(.95rem,2.6vw,1.1rem);color:var(--muted);}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
+
+  .card{
+    background:var(--card);
+    border-radius:20px;
+    border:none;
+    border-top:8px solid var(--c);
+    padding:20px 16px 18px;
+    text-align:left;
+    cursor:pointer;
+    box-shadow:0 2px 0 var(--line);
+    font-family:inherit;
+    display:flex;flex-direction:column;gap:10px;
+    transition:transform .12s ease;
+    min-height:44px;
+    color:var(--ink);
+  }
+  .card:active{transform:scale(.97);}
+  @media (hover:hover){ .card:hover{transform:translateY(-2px);} }
+  .card:focus-visible{outline:3px solid var(--c);outline-offset:2px;}
+  .card .icon{font-size:2.1rem;line-height:1;}
+  .card h3{margin:0;font-size:1.15rem;}
+  .card span.tag{font-size:.85rem;color:var(--muted);}
+
+  .avatar-circle{
+    width:56px;height:56px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.8rem;background:var(--bg);border:3px solid var(--c);
+    flex-shrink:0;
+  }
+  .profile-card{flex-direction:row;align-items:center;gap:14px;padding:14px 16px;}
+  .profile-card h3{font-size:1.05rem;}
+  .profile-card span.tag{font-size:.8rem;}
+
+  .avatar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(56px,1fr));gap:10px;margin:14px 0 20px;}
+  .avatar-opt{
+    background:var(--card);border:3px solid var(--line);border-radius:16px;
+    font-size:1.9rem;padding:10px 0;cursor:pointer;min-height:56px;
+  }
+  .avatar-opt.picked{border-color:var(--violet);background:var(--bg);}
+  .avatar-opt:focus-visible{outline:3px solid var(--violet);}
+
+  .field{
+    width:100%;padding:14px 16px;border:2px solid var(--line);border-radius:14px;
+    font-family:'Nunito';font-size:1.05rem;background:var(--card);color:var(--ink);
+    margin-bottom:6px;
+  }
+  .field:focus{outline:none;border-color:var(--violet);}
+  .field-label{font-size:.85rem;color:var(--muted);margin:0 0 6px;font-weight:700;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:10px;flex-wrap:wrap;}
+  .back{
+    background:none;border:2px solid var(--line);border-radius:12px;
+    padding:10px 14px;font-family:'Nunito';font-weight:700;color:var(--ink);
+    cursor:pointer;font-size:.95rem;min-height:44px;
+  }
+  .profile-chip{
+    display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--line);
+    border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;font-weight:700;font-size:.9rem;
+    color:var(--ink);min-height:44px;
+  }
+  .profile-chip .mini-avatar{width:30px;height:30px;border-radius:50%;background:var(--bg);
+    display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+
+  .progress{flex:1;height:12px;background:var(--line);border-radius:8px;overflow:hidden;margin:0 12px;min-width:60px;}
+  .progress > div{height:100%;background:var(--c);border-radius:8px;transition:width .25s ease;}
+  .counter{font-weight:800;color:var(--muted);font-size:.9rem;white-space:nowrap;}
+
+  .q-card{
+    background:var(--card);
+    border-radius:22px;
+    padding:clamp(20px,4vw,30px) clamp(16px,4vw,24px);
+    box-shadow:0 2px 0 var(--line);
+    text-align:center;
+  }
+  .prompt{font-size:clamp(1.15rem,3.6vw,1.4rem);font-weight:800;margin:0 0 18px;font-family:'Baloo 2';}
+  .stage{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+    margin-bottom:20px;min-height:64px;align-items:center;
+  }
+  .stage .obj{font-size:clamp(1.8rem,5vw,2.2rem);}
+  .stage-letter{font-size:clamp(2.6rem,9vw,3.4rem);font-weight:800;font-family:'Baloo 2';color:var(--c);}
+  .shape{width:clamp(48px,12vw,64px);height:clamp(48px,12vw,64px);display:inline-block;}
+
+  .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;}
+  .opt{
+    background:var(--bg);
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:16px 8px;
+    font-family:'Baloo 2';
+    font-size:1.3rem;
+    font-weight:700;
+    color:var(--ink);
+    cursor:pointer;
+    min-height:44px;
+  }
+  @media (hover:hover){ .opt:not([disabled]):hover{border-color:var(--c);} }
+  .opt:focus-visible{outline:3px solid var(--c);}
+  .opt.correct{background:var(--feedback-good-bg);border-color:var(--teal);color:var(--feedback-good-ink);}
+  .opt.wrong{background:var(--feedback-bad-bg);border-color:var(--coral);color:var(--feedback-bad-ink);}
+  .opt[disabled]{cursor:default;}
+
+  .feedback{min-height:28px;margin-top:14px;font-weight:800;font-size:1.05rem;}
+  .feedback.good{color:var(--feedback-good-ink);}
+  .feedback.bad{color:var(--feedback-bad-ink);}
+
+  .next-btn{
+    margin-top:18px;width:100%;padding:14px;border:none;border-radius:16px;
+    background:var(--c);color:#fff;font-family:'Baloo 2';font-size:1.15rem;
+    font-weight:700;cursor:pointer;min-height:48px;
+  }
+  .next-btn[disabled]{opacity:.35;cursor:default;}
+
+  .done{text-align:center;padding:20px 10px;}
+  .stars{font-size:2.6rem;margin:14px 0 4px;}
+  .done h2{margin:6px 0;font-size:1.6rem;}
+  .done p{color:var(--muted);margin:0 0 22px;}
+  .done-actions{display:flex;flex-direction:column;gap:10px;}
+  .done-actions button{
+    padding:14px;border-radius:16px;font-family:'Baloo 2';font-weight:700;font-size:1.05rem;cursor:pointer;min-height:48px;
+  }
+  .btn-primary{border:none;background:var(--c);color:#fff;}
+  .btn-secondary{border:2px solid var(--line);background:var(--card);color:var(--ink);}
+  .btn-full{width:100%;}
+
+  .diff-note{font-size:.85rem;color:var(--muted);margin:-14px 0 18px;text-align:center;}
+
+  /* ---- Dashboard ---- */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;}
+  .stat-card{background:var(--card);border-radius:16px;padding:16px;text-align:center;box-shadow:0 2px 0 var(--line);}
+  .stat-card .num{font-family:'Baloo 2';font-size:1.7rem;font-weight:800;color:var(--violet);}
+  .stat-card .lab{font-size:.8rem;color:var(--muted);margin-top:2px;}
+  .bars{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
+  .bar-row{display:flex;align-items:center;gap:10px;}
+  .bar-row .bl{width:110px;font-size:.9rem;font-weight:700;flex-shrink:0;}
+  .bar-track{flex:1;height:16px;background:var(--line);border-radius:8px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:8px;}
+  .bar-row .bp{width:44px;text-align:right;font-size:.85rem;color:var(--muted);flex-shrink:0;}
+  .history-item{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--card);border-radius:14px;padding:12px 16px;margin-bottom:8px;
+    box-shadow:0 1px 0 var(--line);font-size:.92rem;
+  }
+  .history-item .hd{color:var(--muted);font-size:.8rem;}
+  .empty-note{text-align:center;color:var(--muted);padding:20px 0;}
+
+  .loading-wrap{text-align:center;padding:60px 20px;color:var(--muted);}
+
+  .hidden{display:none;}
+
+  @media (hover:hover){ .done-actions button:hover, .next-btn:not([disabled]):hover, .back:hover, .profile-chip:hover{opacity:.9;} }
+  @media (prefers-reduced-motion:reduce){.card,.progress>div{transition:none;}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ---------------- Storage layer (local device only) ---------------- */
+let profiles = [];
+let activeProfileId = null;
+let storageReady = false;
+
+function persist(){
+  try{ localStorage.setItem('la_profiles_v1', JSON.stringify({ profiles })); }catch(e){}
+}
+
+function initStorage(){
+  try{
+    const raw = localStorage.getItem('la_profiles_v1');
+    profiles = raw ? (JSON.parse(raw).profiles || []) : [];
+  }catch(e){ profiles = []; }
+  storageReady = true;
+  try{ activeProfileId = localStorage.getItem('la_active_profile'); }catch(e){}
+  if(activeProfileId && !profiles.find(p=>p.id===activeProfileId)) activeProfileId = null;
+  render();
+}
+function setActiveProfile(id){
+  activeProfileId = id;
+  try{ localStorage.setItem('la_active_profile', id); }catch(e){}
+}
+function activeProfile(){ return profiles.find(p=>p.id===activeProfileId) || null; }
+
+const ANIMAL_AVATARS = ["🐶","🐱","🐰","🦊","🐼","🐨","🦁","🐯","🐵","🐸","🐷","🐻","🦄","🐹","🐢","🐧"];
+
+function recordSession(subjectKey, subjectName, difficulty, correct, total){
+  const p = activeProfile();
+  if(!p) return;
+  p.history = p.history || [];
+  p.history.push({ date:new Date().toISOString(), subject:subjectKey, subjectName, difficulty:difficulty||null, correct, total });
+  if(p.history.length > 60) p.history = p.history.slice(p.history.length-60);
+  persist();
+}
+
+/* ---------------- Content ---------------- */
+const SUBJECTS = {
+  letters: { name:"Letters", tag:"Alphabet", icon:"🔤", color:"var(--coral)", build: buildLetters },
+  numbers: { name:"Counting", tag:"Numbers", icon:"🔢", color:"var(--teal)", build: buildCounting },
+  shapes: { name:"Shapes & Colors", tag:"Match it", icon:"🔺", color:"var(--violet)", build: buildShapes },
+  mathYoung: { name:"Math Basics", tag:"Add & count", icon:"➕", color:"var(--amber)", build: buildMathYoung },
+  mathElem: { name:"Math", tag:"Add, subtract, multiply", icon:"➗", color:"var(--amber)", build: buildMathElem },
+  english: { name:"English", tag:"Words & grammar", icon:"📖", color:"var(--sky)", build: buildEnglish },
+  science: { name:"Science", tag:"Explore the world", icon:"🔬", color:"var(--leaf)", build: buildScience }
+};
+
+const AGE_GROUPS = {
+  young: { label:"Little Learners", range:"Ages 4–6", icon:"🧸", subjects:["letters","numbers","shapes","mathYoung"] },
+  elementary: { label:"Elementary", range:"Ages 6–8+", icon:"🎒", subjects:["mathElem","english","science"] }
+};
+
+const DIFFICULTIES = [
+  { key:"easy", label:"Easy", blurb:"Warm up" },
+  { key:"medium", label:"Medium", blurb:"Just right" },
+  { key:"hard", label:"Hard", blurb:"Challenge me" }
+];
+
+let ageKey = null;
+let pendingSubjectKey = null;
+let state = null;
+let profileDraft = null; // {name, avatar} while creating a profile
+let showDashboard = false;
+
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+
+function buildLetters(){
+  const letters = ["A","B","C","D","E","F","G","H","M","S","T","R"];
+  return shuffle(letters).slice(0,6).map(L=>{
+    const opts = shuffle([L, ...shuffle(letters.filter(x=>x!==L)).slice(0,3)]);
+    return { prompt:`Click the letter <span style="color:var(--coral)">${L}</span>`,
+      stageHTML: `<div class="stage-letter" style="visibility:hidden">.</div>`, options: opts, answer: L };
+  });
+}
+
+const OBJ_EMOJI = ["🍎","⭐","🐝","🍓","🎈","🐟","🍪","🌸"];
+function buildCounting(){
+  const out=[];
+  for(let i=0;i<6;i++){
+    const n = 2 + Math.floor(Math.random()*8);
+    const e = OBJ_EMOJI[Math.floor(Math.random()*OBJ_EMOJI.length)];
+    const opts = shuffle([n, ...shuffle([n-2,n-1,n+1,n+2].filter(x=>x>0 && x!==n)).slice(0,3)]).slice(0,4);
+    out.push({ prompt:"How many do you see?", stageHTML: Array(n).fill(`<span class="obj">${e}</span>`).join(""), options: opts, answer: n });
+  }
+  return out;
+}
+
+const SHAPES = [
+  {name:"circle", svg:(c)=>`<svg class="shape" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="${c}"/></svg>`},
+  {name:"square", svg:(c)=>`<svg class="shape" viewBox="0 0 64 64"><rect x="6" y="6" width="52" height="52" rx="6" fill="${c}"/></svg>`},
+  {name:"triangle", svg:(c)=>`<svg class="shape" viewBox="0 0 64 64"><polygon points="32,6 60,58 4,58" fill="${c}"/></svg>`},
+  {name:"star", svg:(c)=>`<svg class="shape" viewBox="0 0 64 64"><polygon points="32,4 40,24 62,24 44,38 50,60 32,47 14,60 20,38 2,24 24,24" fill="${c}"/></svg>`}
+];
+const COLORS = [["red","#E4453A"],["blue","#3B82C4"],["green","#2FA84F"],["yellow","#F0B429"],["purple","#8B5CF6"]];
+function buildShapes(){
+  const out=[];
+  for(let i=0;i<6;i++){
+    const askColor = Math.random()<0.5;
+    const shapeChoice = shuffle(SHAPES).slice(0,4);
+    const [cName,cHex] = COLORS[Math.floor(Math.random()*COLORS.length)];
+    if(askColor){
+      const target = shapeChoice[0];
+      out.push({ prompt:`Click the <span style="color:${cHex}">${cName}</span> shape`, stageHTML:"",
+        optionsHTML: shuffle(shapeChoice.map((s,idx)=>({s,color: idx===0?cHex:COLORS[(idx+1)%COLORS.length][1]}))),
+        isShapeQ:true, answer: target.name });
+    } else {
+      const target = shapeChoice[0];
+      out.push({ prompt:`Click the ${target.name}`, stageHTML:"",
+        optionsHTML: shuffle(shapeChoice.map((s)=>({s,color:"#8A7CA8"}))), isShapeQ:true, answer: target.name });
+    }
+  }
+  return out;
+}
+
+function buildMathYoung(){
+  const out=[];
+  for(let i=0;i<6;i++){
+    const add = Math.random()<0.6;
+    let a,b,ans,text;
+    if(add){ a=1+Math.floor(Math.random()*9); b=1+Math.floor(Math.random()*9); ans=a+b; text=`${a} + ${b} = ?`; }
+    else { a=2+Math.floor(Math.random()*9); b=1+Math.floor(Math.random()*a); ans=a-b; text=`${a} − ${b} = ?`; }
+    const opts = shuffle([ans, ...shuffle([ans-2,ans-1,ans+1,ans+2].filter(x=>x>=0 && x!==ans)).slice(0,3)]).slice(0,4);
+    out.push({ prompt:text, stageHTML:"", options: opts, answer: ans });
+  }
+  return out;
+}
+
+function numOptions(ans, spread){
+  let cand = Array.from(new Set(spread.map(d=>ans+d).filter(x=>x>=0 && x!==ans)));
+  cand = shuffle(cand).slice(0,3);
+  let guard=0;
+  while(cand.length<3 && guard<20){
+    guard++;
+    const v = ans + (Math.floor(Math.random()*10)-5);
+    if(v>=0 && v!==ans && !cand.includes(v)) cand.push(v);
+  }
+  return shuffle([ans,...cand]);
+}
+
+function buildMathElem(difficulty){
+  const level = difficulty || "medium";
+  let typePool;
+  if(level==="easy") typePool = ["add","add","add","sub","sub","pattern"];
+  else if(level==="hard") typePool = ["add","sub","mul","mul","div","pattern"];
+  else typePool = ["add","add","sub","sub","mul","pattern"];
+  const types = shuffle(typePool);
+  return types.map(t=>{
+    if(t==="add"){
+      let a,b;
+      if(level==="easy"){ a=1+Math.floor(Math.random()*8); b=1+Math.floor(Math.random()*(9-a)); }
+      else if(level==="hard"){ a=10+Math.floor(Math.random()*40); b=10+Math.floor(Math.random()*40); }
+      else { a=1+Math.floor(Math.random()*12); b=1+Math.floor(Math.random()*8); }
+      const ans=a+b;
+      return { prompt:`${a} + ${b} = ?`, stageHTML:"", options:numOptions(ans,[-3,-2,-1,1,2,3]), answer:ans };
+    }
+    if(t==="sub"){
+      let a,b;
+      if(level==="easy"){ a=2+Math.floor(Math.random()*8); b=1+Math.floor(Math.random()*(a-1)); }
+      else if(level==="hard"){ a=20+Math.floor(Math.random()*30); b=1+Math.floor(Math.random()*(a-1)); }
+      else { a=10+Math.floor(Math.random()*10); b=1+Math.floor(Math.random()*(a-1)); }
+      const ans=a-b;
+      return { prompt:`${a} − ${b} = ?`, stageHTML:"", options:numOptions(ans,[-3,-2,-1,1,2,3]), answer:ans };
+    }
+    if(t==="mul"){
+      let a,b;
+      if(level==="hard"){ a=2+Math.floor(Math.random()*8); b=2+Math.floor(Math.random()*8); }
+      else { a=2+Math.floor(Math.random()*4); b=2+Math.floor(Math.random()*4); }
+      const ans=a*b;
+      return { prompt:`${a} × ${b} = ?`, stageHTML:"", options:numOptions(ans,[-4,-2,-1,1,2,4]), answer:ans };
+    }
+    if(t==="div"){
+      const b=2+Math.floor(Math.random()*4), q=2+Math.floor(Math.random()*8), a=b*q;
+      return { prompt:`${a} ÷ ${b} = ?`, stageHTML:"", options:numOptions(q,[-2,-1,1,2,3]), answer:q };
+    }
+    const stepPool = level==="hard" ? [3,4,6,7,9] : [2,5,10];
+    const step = stepPool[Math.floor(Math.random()*stepPool.length)];
+    const start = step*(1+Math.floor(Math.random()*3));
+    const seq = [start, start+step, start+2*step];
+    const ans = start+3*step;
+    return { prompt:`${seq.join(", ")}, ? &nbsp;<span style="font-size:.9rem;color:var(--muted)">(counting by ${step}s)</span>`, stageHTML:"", options:numOptions(ans,[-step,step,-2*step,1]), answer:ans };
+  });
+}
+
+const ENGLISH_POOL = [
+  {level:"easy", prompt:"Which word means the same as 'happy'?", options:["glad","sad","tired","cold"], answer:"glad"},
+  {level:"easy", prompt:"What is the opposite of 'big'?", options:["small","tall","fast","loud"], answer:"small"},
+  {level:"easy", prompt:"What is the opposite of 'hot'?", options:["cold","warm","wet","dark"], answer:"cold"},
+  {level:"easy", prompt:"Click the word that means 'quick'.", options:["fast","slow","quiet","heavy"], answer:"fast"},
+  {level:"easy", prompt:"What is the opposite of 'up'?", options:["down","left","near","loud"], answer:"down"},
+  {level:"easy", prompt:"Which word rhymes with 'sun'?", options:["fun","cup","dog","cat"], answer:"fun"},
+  {level:"medium", prompt:"Which is a naming word (noun)?", options:["dog","run","blue","quickly"], answer:"dog"},
+  {level:"medium", prompt:"Which is a doing word (verb)?", options:["jump","happy","table","red"], answer:"jump"},
+  {level:"medium", prompt:"Which word rhymes with 'cat'?", options:["hat","dog","sun","cup"], answer:"hat"},
+  {level:"medium", prompt:"Which word is spelled correctly?", options:["friend","freind","frend","fiend"], answer:"friend"},
+  {level:"medium", prompt:"Which word means the same as 'small'?", options:["tiny","huge","loud","fast"], answer:"tiny"},
+  {level:"medium", prompt:"Which word means the opposite of 'day'?", options:["night","light","sun","morning"], answer:"night"},
+  {level:"hard", prompt:"Which word means the same as 'enormous'?", options:["huge","tiny","quiet","slow"], answer:"huge"},
+  {level:"hard", prompt:"Which word is a describing word (adjective)?", options:["bright","run","quickly","table"], answer:"bright"},
+  {level:"hard", prompt:"What is the correct plural of 'child'?", options:["children","childs","childes","child"], answer:"children"},
+  {level:"hard", prompt:"What is the opposite of 'ancient'?", options:["modern","old","dusty","rare"], answer:"modern"},
+  {level:"hard", prompt:"Which sentence uses punctuation correctly?", options:["I like dogs.","i like dogs","I like dogs","I like dogs,"], answer:"I like dogs."},
+  {level:"hard", prompt:"Which word means the same as 'begin'?", options:["start","end","stop","finish"], answer:"start"}
+];
+function buildEnglish(difficulty){
+  const level = difficulty || "medium";
+  return shuffle(ENGLISH_POOL.filter(q=>q.level===level)).slice(0,6)
+    .map(q=>({prompt:q.prompt, stageHTML:"", options:shuffle(q.options), answer:q.answer}));
+}
+
+const SCIENCE_POOL = [
+  {level:"easy", prompt:"Which of these is a mammal?", options:["dog","fish","frog","bee"], answer:"dog"},
+  {level:"easy", prompt:"What do plants need to grow?", options:["sunlight","ice","rocks","sand"], answer:"sunlight"},
+  {level:"easy", prompt:"What is frozen water called?", options:["ice","steam","rain","cloud"], answer:"ice"},
+  {level:"easy", prompt:"Which planet do we live on?", options:["Earth","Mars","the Moon","the Sun"], answer:"Earth"},
+  {level:"easy", prompt:"Which season comes right after winter?", options:["spring","summer","fall","autumn"], answer:"spring"},
+  {level:"easy", prompt:"What do bees make?", options:["honey","milk","silk","wax"], answer:"honey"},
+  {level:"medium", prompt:"How many legs does an insect have?", options:["6","4","8","2"], answer:"6"},
+  {level:"medium", prompt:"What organ pumps blood in your body?", options:["heart","lungs","brain","stomach"], answer:"heart"},
+  {level:"medium", prompt:"What gas do humans need to breathe?", options:["oxygen","carbon dioxide","helium","smoke"], answer:"oxygen"},
+  {level:"medium", prompt:"Which of these floats on water?", options:["a leaf","a rock","a coin","a marble"], answer:"a leaf"},
+  {level:"medium", prompt:"What are the three states of matter?", options:["solid, liquid, gas","hot, cold, warm","big, small, medium","fast, slow, still"], answer:"solid, liquid, gas"},
+  {level:"medium", prompt:"Which of these is a source of light?", options:["the Sun","a rock","a pillow","a shoe"], answer:"the Sun"},
+  {level:"hard", prompt:"What do plants use sunlight to make?", options:["food (photosynthesis)","sound","soil","ice"], answer:"food (photosynthesis)"},
+  {level:"hard", prompt:"What is it called when water rises into the air as vapor?", options:["evaporation","condensation","precipitation","collection"], answer:"evaporation"},
+  {level:"hard", prompt:"Which of these is a simple machine?", options:["a lever","a computer","a battery","a magnet"], answer:"a lever"},
+  {level:"hard", prompt:"What does a caterpillar turn into?", options:["a butterfly","a bee","a beetle","a moth larva"], answer:"a butterfly"},
+  {level:"hard", prompt:"Which organ helps you breathe?", options:["lungs","liver","kidney","stomach"], answer:"lungs"},
+  {level:"hard", prompt:"What force pulls objects toward the Earth?", options:["gravity","friction","magnetism","electricity"], answer:"gravity"}
+];
+function buildScience(difficulty){
+  const level = difficulty || "medium";
+  return shuffle(SCIENCE_POOL.filter(q=>q.level===level)).slice(0,6)
+    .map(q=>({prompt:q.prompt, stageHTML:"", options:shuffle(q.options), answer:q.answer}));
+}
+
+/* ---------------- Render ---------------- */
+function render(){
+  const app = document.getElementById('app');
+  if(!storageReady){ app.innerHTML = `<div class="loading-wrap"><h2>Loading…</h2><p>Getting your profiles ready</p></div>`; return; }
+  if(profileDraft){ app.innerHTML = addProfileHTML(); attachAddProfile(); return; }
+  if(!activeProfileId || !activeProfile()){ app.innerHTML = profileSelectHTML(); attachProfileSelect(); return; }
+  if(showDashboard){ app.innerHTML = dashboardHTML(); attachDashboard(); return; }
+  if(!ageKey){ app.innerHTML = ageHTML(); attachAge(); return; }
+  if(!state && ageKey==="elementary" && pendingSubjectKey){ app.innerHTML = difficultyHTML(); attachDifficulty(); return; }
+  if(!state){ app.innerHTML = subjectHTML(); attachSubject(); return; }
+  if(state.index >= state.questions.length){ app.innerHTML = doneHTML(); attachDone(); return; }
+  app.innerHTML = questionHTML();
+  attachQuestion();
+}
+
+function profileChipHTML(){
+  const p = activeProfile();
+  if(!p) return "";
+  return `<button class="profile-chip" id="chipBtn">
+    <span class="mini-avatar">${p.avatar}</span> ${p.name}
+  </button>`;
+}
+
+/* ---- Profile select / create ---- */
+function profileSelectHTML(){
+  let cards = profiles.map(p=>`
+    <button class="card profile-card" style="--c:var(--violet)" data-id="${p.id}">
+      <span class="avatar-circle">${p.avatar}</span>
+      <div><h3>${p.name}</h3><span class="tag">${(p.history||[]).length} sessions</span></div>
+    </button>`).join("");
+  return `
+    <div class="home-head">
+      <h1>Learning Adventures</h1>
+      <p>Who's practicing today?</p>
+    </div>
+    <div class="grid">
+      ${cards}
+      <button class="card" style="--c:var(--coral)" id="newProfileBtn">
+        <div class="icon">➕</div><h3>Add profile</h3><span class="tag">New learner</span>
+      </button>
+    </div>
+  `;
+}
+function attachProfileSelect(){
+  document.querySelectorAll('[data-id]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ setActiveProfile(btn.dataset.id); ageKey=null; state=null; render(); });
+  });
+  const nb = document.getElementById('newProfileBtn');
+  if(nb) nb.addEventListener('click', ()=>{ profileDraft = { name:"", avatar: ANIMAL_AVATARS[0] }; render(); });
+}
+
+function addProfileHTML(){
+  let avatars = ANIMAL_AVATARS.map(a=>`
+    <button class="avatar-opt ${a===profileDraft.avatar?'picked':''}" data-a="${a}">${a}</button>
+  `).join("");
+  const backBtn = profiles.length ? `<button class="back" id="cancelBtn">← Cancel</button>` : "";
+  return `
+    <div class="topbar">${backBtn}</div>
+    <div class="home-head"><h1>New profile</h1><p>Pick a name and a cute avatar</p></div>
+    <p class="field-label">Name</p>
+    <input class="field" id="nameInput" maxlength="16" placeholder="e.g. Emma" value="${profileDraft.name}">
+    <p class="field-label" style="margin-top:14px">Avatar</p>
+    <div class="avatar-grid">${avatars}</div>
+    <button class="next-btn" id="saveProfileBtn" style="background:var(--violet)">Create profile</button>
+  `;
+}
+function attachAddProfile(){
+  const cancel = document.getElementById('cancelBtn');
+  if(cancel) cancel.addEventListener('click', ()=>{ profileDraft=null; render(); });
+  const nameInput = document.getElementById('nameInput');
+  nameInput.addEventListener('input', ()=>{ profileDraft.name = nameInput.value; });
+  document.querySelectorAll('.avatar-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ profileDraft.avatar = btn.dataset.a; render(); });
+  });
+  document.getElementById('saveProfileBtn').addEventListener('click', ()=>{
+    const name = (profileDraft.name || "").trim() || "Learner";
+    const p = { id: 'p_' + Date.now() + Math.floor(Math.random()*1000), name, avatar: profileDraft.avatar, history: [] };
+    profiles.push(p);
+    persist();
+    profileDraft = null;
+    setActiveProfile(p.id);
+    render();
+  });
+  nameInput.focus();
+}
+
+/* ---- Age / subject / difficulty ---- */
+function ageHTML(){
+  let cards = Object.entries(AGE_GROUPS).map(([key,g])=>`
+    <button class="card" style="--c:var(--violet)" data-key="${key}">
+      <div class="icon">${g.icon}</div><h3>${g.label}</h3><span class="tag">${g.range}</span>
+    </button>`).join("");
+  return `
+    <div class="topbar">${profileChipHTML()}</div>
+    <div class="home-head"><h1>Learning Adventures</h1><p>Choose a level</p></div>
+    <div class="grid">${cards}</div>
+  `;
+}
+function attachAge(){
+  const chip = document.getElementById('chipBtn');
+  if(chip) chip.addEventListener('click', ()=>{ activeProfileId=null; render(); });
+  document.querySelectorAll('[data-key]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ ageKey = btn.dataset.key; render(); });
+  });
+}
+
+function subjectHTML(){
+  const group = AGE_GROUPS[ageKey];
+  let cards = group.subjects.map(key=>{
+    const s = SUBJECTS[key];
+    return `<button class="card" style="--c:${s.color}" data-key="${key}">
+      <div class="icon">${s.icon}</div><h3>${s.name}</h3><span class="tag">${s.tag}</span>
+    </button>`;
+  }).join("");
+  return `
+    <div class="topbar">
+      <button class="back" id="ageBack">← Change level</button>
+      ${profileChipHTML()}
+    </div>
+    <div class="home-head"><h1>${group.label}</h1><p>${group.range} · Pick a subject</p></div>
+    <div class="grid">${cards}</div>
+    <button class="back btn-full" id="dashBtn" style="margin-top:16px">📊 My Progress</button>
+  `;
+}
+function attachSubject(){
+  document.getElementById('ageBack').addEventListener('click', ()=>{ ageKey=null; render(); });
+  document.getElementById('dashBtn').addEventListener('click', ()=>{ showDashboard=true; render(); });
+  const chip = document.getElementById('chipBtn');
+  if(chip) chip.addEventListener('click', ()=>{ activeProfileId=null; render(); });
+  document.querySelectorAll('[data-key]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const key = btn.dataset.key;
+      if(ageKey==="elementary"){ pendingSubjectKey = key; render(); return; }
+      const s = SUBJECTS[key];
+      state = { key, color:s.color, questions: s.build(), index:0, correct:0 };
+      render();
+    });
+  });
+}
+
+function difficultyHTML(){
+  const s = SUBJECTS[pendingSubjectKey];
+  let cards = DIFFICULTIES.map(d=>`
+    <button class="card" style="--c:${s.color}" data-key="${d.key}">
+      <h3>${d.label}</h3><span class="tag">${d.blurb}</span>
+    </button>`).join("");
+  return `
+    <div class="topbar"><button class="back" id="subBack">← Subjects</button>${profileChipHTML()}</div>
+    <div class="home-head"><h1>${s.name}</h1><p>Choose a difficulty</p></div>
+    <div class="grid">${cards}</div>
+  `;
+}
+function attachDifficulty(){
+  document.getElementById('subBack').addEventListener('click', ()=>{ pendingSubjectKey=null; render(); });
+  document.querySelectorAll('[data-key]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const difficulty = btn.dataset.key;
+      const key = pendingSubjectKey;
+      const s = SUBJECTS[key];
+      state = { key, color:s.color, difficulty, questions: s.build(difficulty), index:0, correct:0 };
+      pendingSubjectKey = null;
+      render();
+    });
+  });
+}
+
+/* ---- Question / done ---- */
+function questionHTML(){
+  const s = SUBJECTS[state.key];
+  const q = state.questions[state.index];
+  const pct = Math.round((state.index/state.questions.length)*100);
+  let stage = q.stageHTML ? `<div class="stage">${q.stageHTML}</div>` : "";
+  let optionsBlock;
+  if(q.isShapeQ){
+    optionsBlock = `<div class="options">` + q.optionsHTML.map(o=>
+      `<button class="opt" data-val="${o.s.name}">${o.s.svg(o.color)}</button>`).join("") + `</div>`;
+  } else {
+    optionsBlock = `<div class="options">` + q.options.map(o=>
+      `<button class="opt" data-val="${o}">${o}</button>`).join("") + `</div>`;
+  }
+  const diffTag = state.difficulty ? `<span style="text-transform:capitalize">${state.difficulty}</span> · ` : "";
+  return `
+    <div class="topbar" style="--c:${s.color}">
+      <button class="back" id="backBtn">← Subjects</button>
+      <div class="progress"><div style="width:${pct}%;background:${s.color}"></div></div>
+      <div class="counter">${diffTag}${state.index+1}/${state.questions.length}</div>
+    </div>
+    <div class="q-card">
+      <p class="prompt">${q.prompt}</p>
+      ${stage}
+      ${optionsBlock}
+      <div class="feedback" id="fb"></div>
+      <button class="next-btn" id="nextBtn" style="background:${s.color}" disabled>Next</button>
+    </div>
+  `;
+}
+function attachQuestion(){
+  document.getElementById('backBtn').addEventListener('click', ()=>{ state=null; render(); });
+  const q = state.questions[state.index];
+  const fb = document.getElementById('fb');
+  const nextBtn = document.getElementById('nextBtn');
+  let locked = false;
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(locked) return;
+      locked = true;
+      const val = btn.dataset.val;
+      const isCorrect = String(val) === String(q.answer);
+      document.querySelectorAll('.opt').forEach(b=>{
+        b.disabled = true;
+        if(String(b.dataset.val)===String(q.answer)) b.classList.add('correct');
+        else if(b===btn) b.classList.add('wrong');
+      });
+      if(isCorrect){ state.correct++; fb.textContent="Great job! 🎉"; fb.className="feedback good"; }
+      else { fb.textContent="Nice try! The right answer is highlighted."; fb.className="feedback bad"; }
+      nextBtn.disabled = false;
+    });
+  });
+  nextBtn.addEventListener('click', ()=>{
+    state.index++;
+    if(state.index >= state.questions.length){
+      const s = SUBJECTS[state.key];
+      recordSession(state.key, s.name, state.difficulty, state.correct, state.questions.length);
+    }
+    render();
+  });
+}
+
+function doneHTML(){
+  const s = SUBJECTS[state.key];
+  const total = state.questions.length;
+  const ratio = state.correct/total;
+  const starCount = ratio>=0.8?3:ratio>=0.5?2:1;
+  const stars = "⭐".repeat(starCount)+"✩".repeat(3-starCount);
+  const diffLabel = state.difficulty ? `<p class="diff-note">${DIFFICULTIES.find(d=>d.key===state.difficulty).label} level</p>` : "";
+  return `
+    <div class="q-card done" style="border-top:8px solid ${s.color}">
+      <div class="stars">${stars}</div>
+      <h2>All done!</h2>
+      <p>You got ${state.correct} out of ${total} right.</p>
+      ${diffLabel}
+      <div class="done-actions">
+        <button class="btn-primary" id="again" style="background:${s.color}">Play again</button>
+        <button class="btn-secondary" id="dashFromDone">📊 See my progress</button>
+        <button class="btn-secondary" id="home">Choose another subject</button>
+      </div>
+    </div>
+  `;
+}
+function attachDone(){
+  document.getElementById('again').addEventListener('click', ()=>{
+    const key = state.key;
+    const difficulty = state.difficulty;
+    const s = SUBJECTS[key];
+    state = { key, color:s.color, difficulty, questions: s.build(difficulty), index:0, correct:0 };
+    render();
+  });
+  document.getElementById('home').addEventListener('click', ()=>{ state=null; render(); });
+  document.getElementById('dashFromDone').addEventListener('click', ()=>{ state=null; showDashboard=true; render(); });
+}
+
+/* ---- Dashboard ---- */
+function dashboardHTML(){
+  const p = activeProfile();
+  const hist = (p.history||[]);
+  const totalSessions = hist.length;
+  const totalCorrect = hist.reduce((s,h)=>s+h.correct,0);
+  const totalQs = hist.reduce((s,h)=>s+h.total,0);
+  const acc = totalQs ? Math.round((totalCorrect/totalQs)*100) : 0;
+
+  const bySubject = {};
+  hist.forEach(h=>{
+    if(!bySubject[h.subject]) bySubject[h.subject] = { name:h.subjectName, correct:0, total:0, color:(SUBJECTS[h.subject]||{}).color||'var(--violet)' };
+    bySubject[h.subject].correct += h.correct;
+    bySubject[h.subject].total += h.total;
+  });
+  const bars = Object.values(bySubject).map(b=>{
+    const pct = b.total ? Math.round((b.correct/b.total)*100) : 0;
+    return `<div class="bar-row">
+      <div class="bl">${b.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${b.color}"></div></div>
+      <div class="bp">${pct}%</div>
+    </div>`;
+  }).join("") || `<p class="empty-note">No sessions yet — finish a worksheet to see stats here!</p>`;
+
+  const recent = hist.slice(-5).reverse().map(h=>{
+    const d = new Date(h.date);
+    const dateStr = d.toLocaleDateString(undefined, { month:'short', day:'numeric' });
+    return `<div class="history-item">
+      <span>${h.subjectName}${h.difficulty?` · <span style="text-transform:capitalize">${h.difficulty}</span>`:""}</span>
+      <span><b>${h.correct}/${h.total}</b> <span class="hd">${dateStr}</span></span>
+    </div>`;
+  }).join("");
+
+  return `
+    <div class="topbar"><button class="back" id="dashBack">← Back</button>${profileChipHTML()}</div>
+    <div class="home-head"><h1>${p.avatar} ${p.name}'s Progress</h1></div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="num">${totalSessions}</div><div class="lab">Worksheets done</div></div>
+      <div class="stat-card"><div class="num">${totalCorrect}/${totalQs}</div><div class="lab">Correct answers</div></div>
+      <div class="stat-card"><div class="num">${acc}%</div><div class="lab">Accuracy</div></div>
+    </div>
+    <h3 style="margin:0 0 10px">By subject</h3>
+    <div class="bars">${bars}</div>
+    ${recent ? `<h3 style="margin:0 0 10px">Recent sessions</h3>${recent}` : ""}
+  `;
+}
+function attachDashboard(){
+  document.getElementById('dashBack').addEventListener('click', ()=>{ showDashboard=false; render(); });
+  const chip = document.getElementById('chipBtn');
+  if(chip) chip.addEventListener('click', ()=>{ activeProfileId=null; showDashboard=false; render(); });
+}
+
+initStorage();
+</script>
+</body>
+</html>
