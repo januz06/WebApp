@@ -88,14 +88,17 @@ const SUBJECTS = {
   numbers: { name:"Counting", tag:"Numbers", icon:"🔢", color:"var(--teal)", build: buildCounting },
   shapes: { name:"Shapes & Colors", tag:"Match it", icon:"🔺", color:"var(--violet)", build: buildShapes },
   mathYoung: { name:"Math Basics", tag:"Add & count", icon:"➕", color:"var(--amber)", build: buildMathYoung },
-  mathElem: { name:"Math", tag:"Add, subtract, multiply", icon:"➗", color:"var(--amber)", build: buildMathElem },
+  addition: { name:"Addition", tag:"Math", icon:"➕", color:"var(--amber)", build: buildAddition },
+  subtraction: { name:"Subtraction", tag:"Math", icon:"➖", color:"var(--coral)", build: buildSubtraction },
+  multiplication: { name:"Multiplication", tag:"Math", icon:"✖️", color:"var(--teal)", build: buildMultiplication },
+  division: { name:"Division", tag:"Math", icon:"➗", color:"var(--violet)", build: buildDivision },
   english: { name:"English", tag:"Words & grammar", icon:"📖", color:"var(--sky)", build: buildEnglish },
   science: { name:"Science", tag:"Explore the world", icon:"🔬", color:"var(--leaf)", build: buildScience }
 };
 
 const AGE_GROUPS = {
   young: { label:"Little Learners", range:"Ages 4–6", icon:"🧸", subjects:["letters","numbers","shapes","mathYoung"] },
-  elementary: { label:"Elementary", range:"Ages 6–8+", icon:"🎒", subjects:["mathElem","english","science"] }
+  elementary: { label:"Elementary", range:"Ages 6–8+", icon:"🎒", subjects:["addition","subtraction","multiplication","division","english","science"] }
 };
 
 const DIFFICULTIES = [
@@ -255,6 +258,52 @@ function buildMathElem(difficulty){
     const seq = [start, start+step, start+2*step];
     const ans = start+3*step;
     return { prompt:`${seq.join(", ")}, ? &nbsp;<span style="font-size:.9rem;color:var(--muted)">(counting by ${step}s)</span>`, stageHTML:"", options:numOptions(ans,[-step,step,-2*step,1]), answer:ans, _key:`pat_${step}_${start}` };
+  });
+}
+
+function buildAddition(difficulty){
+  const level = difficulty || "medium";
+  return buildUnique(QUESTIONS_PER_SET, ()=>{
+    let a,b;
+    if(level==="easy"){ a=1+Math.floor(Math.random()*8); b=1+Math.floor(Math.random()*(9-a)); }
+    else if(level==="hard"){ a=10+Math.floor(Math.random()*40); b=10+Math.floor(Math.random()*40); }
+    else { a=1+Math.floor(Math.random()*12); b=1+Math.floor(Math.random()*8); }
+    const ans=a+b;
+    return { prompt:`${a} + ${b} = ?`, stageHTML:"", options:numOptions(ans,[-3,-2,-1,1,2,3]), answer:ans, _key:`add_${a}_${b}` };
+  });
+}
+
+function buildSubtraction(difficulty){
+  const level = difficulty || "medium";
+  return buildUnique(QUESTIONS_PER_SET, ()=>{
+    let a,b;
+    if(level==="easy"){ a=2+Math.floor(Math.random()*8); b=1+Math.floor(Math.random()*(a-1)); }
+    else if(level==="hard"){ a=20+Math.floor(Math.random()*30); b=1+Math.floor(Math.random()*(a-1)); }
+    else { a=10+Math.floor(Math.random()*10); b=1+Math.floor(Math.random()*(a-1)); }
+    const ans=a-b;
+    return { prompt:`${a} − ${b} = ?`, stageHTML:"", options:numOptions(ans,[-3,-2,-1,1,2,3]), answer:ans, _key:`sub_${a}_${b}` };
+  });
+}
+
+function buildMultiplication(difficulty){
+  const level = difficulty || "medium";
+  return buildUnique(QUESTIONS_PER_SET, ()=>{
+    let a,b;
+    if(level==="hard"){ a=2+Math.floor(Math.random()*8); b=2+Math.floor(Math.random()*8); }
+    else { a=2+Math.floor(Math.random()*4); b=2+Math.floor(Math.random()*4); }
+    const ans=a*b;
+    return { prompt:`${a} × ${b} = ?`, stageHTML:"", options:numOptions(ans,[-4,-2,-1,1,2,4]), answer:ans, _key:`mul_${a}_${b}` };
+  });
+}
+
+function buildDivision(difficulty){
+  const level = difficulty || "medium";
+  return buildUnique(QUESTIONS_PER_SET, ()=>{
+    let b,q;
+    if(level==="hard"){ b=2+Math.floor(Math.random()*8); q=2+Math.floor(Math.random()*8); }
+    else { b=2+Math.floor(Math.random()*4); q=2+Math.floor(Math.random()*4); }
+    const a=b*q;
+    return { prompt:`${a} ÷ ${b} = ?`, stageHTML:"", options:numOptions(q,[-2,-1,1,2,3]), answer:q, _key:`div_${a}_${b}` };
   });
 }
 
