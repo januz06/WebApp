@@ -25,11 +25,7 @@ function setActiveProfile(id) {
 function activeProfile() { return profiles.find(p => p.id === activeProfileId) || null; }
 
 const ANIMAL_ICONS = ["🐶", "🐱", "🐰", "🦊", "🐼", "🐨", "🦁", "🐯", "🐵", "🐸", "🐷", "🐻", "🦄", "🐹", "🐢", "🐧"];
-const PERSON_ICONS = {
-    0: "👶",
-    1: "👦",
-    2: "👧"
-};
+const PERSON_ICONS = ["👶", "👦", "👧"];
 const AVATARS = [...PERSON_ICONS, ...ANIMAL_ICONS];
 
 function recordSession(subjectKey, subjectName, difficulty, correct, total) {
