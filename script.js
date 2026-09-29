@@ -1,29 +1,101 @@
-/* ---------------- Storage layer (local device only) ---------------- */
+/* ---------------- Firebase Setup ---------------- */
+const firebaseConfig = {
+    apiKey: "AIzaSyAcrdkfITm86mI7GpB2quf2f21uW1N5NhA",
+    authDomain: "learning-adventure-d304a.firebaseapp.com",
+    databaseURL: "https://learning-adventure-d304a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "learning-adventure-d304a",
+    storageBucket: "learning-adventure-d304a.firebasestorage.app",
+    messagingSenderId: "335074826330",
+    appId: "1:335074826330:web:f7a6c04e3547c2c84ca063",
+    measurementId: "G-40HM1J5GTN"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+/* ---------------- Storage layer ---------------- */
 let profiles = [];
 let activeProfileId = null;
 let storageReady = false;
-let pendingMathKey = null; // Tracks selected math operation
+let pendingMathKey = null;
 
 function persist() {
-    try { localStorage.setItem('la_profiles_v1', JSON.stringify({ profiles })); } catch (e) { }
+    const user = auth.currentUser;
+    if (user) {
+        db.ref('users/' + user.uid).set({
+            profiles: profiles,
+            activeProfileId: activeProfileId
+        }).catch(e => console.error("Firebase persist error:", e));
+    } else {
+        try { localStorage.setItem('la_profiles_v1', JSON.stringify({ profiles })); } catch (e) { }
+    }
 }
 
 function initStorage() {
-    try {
-        const raw = localStorage.getItem('la_profiles_v1');
-        profiles = raw ? (JSON.parse(raw).profiles || []) : [];
-    } catch (e) { profiles = []; }
-    storageReady = true;
-    try { activeProfileId = localStorage.getItem('la_active_profile'); } catch (e) { }
-    if (activeProfileId && !profiles.find(p => p.id === activeProfileId)) activeProfileId = null;
-    render();
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            try {
+                const snapshot = await db.ref('users/' + user.uid).once('value');
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    profiles = data.profiles || [];
+                    activeProfileId = data.activeProfileId || null;
+                } else {
+                    profiles = [];
+                    activeProfileId = null;
+                }
+            } catch (e) {
+                console.error("Firebase read error:", e);
+                profiles = [];
+                activeProfileId = null;
+            }
+        } else {
+            try {
+                const raw = localStorage.getItem('la_profiles_v1');
+                profiles = raw ? (JSON.parse(raw).profiles || []) : [];
+            } catch (e) { profiles = []; }
+            try { activeProfileId = localStorage.getItem('la_active_profile'); } catch (e) { }
+        }
+
+        if (activeProfileId && !profiles.find(p => p.id === activeProfileId)) activeProfileId = null;
+        storageReady = true;
+        render();
+    });
 }
+
 function setActiveProfile(id) {
     activeProfileId = id;
-    try { localStorage.setItem('la_active_profile', id); } catch (e) { }
+    const user = auth.currentUser;
+    if (user) {
+        db.ref('users/' + user.uid + '/activeProfileId').set(id).catch(e => console.error(e));
+    } else {
+        try { localStorage.setItem('la_active_profile', id); } catch (e) { }
+    }
 }
+
 function activeProfile() { return profiles.find(p => p.id === activeProfileId) || null; }
 
+/* ---------------- Auth Functions ---------------- */
+async function registerUser(email, password) {
+    await auth.createUserWithEmailAndPassword(email, password);
+}
+
+async function loginUser(email, password) {
+    await auth.signInWithEmailAndPassword(email, password);
+}
+
+async function logoutUser() {
+    // Save local state to Firebase before logging out
+    persist();
+    await auth.signOut();
+    activeProfileId = null;
+    profiles = [];
+    storageReady = false;
+    render();
+}
+
+/* ---------------- Avatars ---------------- */
 const ANIMAL_ICONS = ["🐶", "🐱", "🐰", "🦊", "🐼", "🐨", "🦁", "🐯", "🐵", "🐸", "🐷", "🐻", "🦄", "🐹", "🐢", "🐧"];
 const PERSON_ICONS = ["👶", "👦", "👧"];
 const AVATARS = [...PERSON_ICONS, ...ANIMAL_ICONS];
@@ -43,6 +115,7 @@ function saveSession() {
     p.inProgress = { key: state.key, color: state.color, difficulty: state.difficulty, questions: state.questions, index: state.index, correct: state.correct, streak: state.streak || 0 };
     persist();
 }
+
 function clearSession() {
     const p = activeProfile();
     if (!p) return;
@@ -113,7 +186,7 @@ const DIFFICULTIES = [
 
 let pendingSubjectKey = null;
 let state = null;
-let profileDraft = null; // {name, avatar, ageGroup} while creating a profile
+let profileDraft = null;
 let focusNameOnRender = false;
 let showDashboard = false;
 
@@ -184,10 +257,8 @@ function buildShapes() {
         const [cName, cHex] = COLORS[Math.floor(Math.random() * COLORS.length)];
         if (askColor) {
             const target = shapeChoice[0];
-            // Pick 3 other unique colors that differ from the target color
             const otherColors = shuffle(COLORS.filter(c => c[1] !== cHex)).slice(0, 3);
             const optionsHTML = shuffle(shapeChoice.map((s, idx) => {
-                // Target shape gets the target color, others get unique alternate colors
                 const color = idx === 0 ? cHex : otherColors[idx - 1][1];
                 return { name: s.name, color };
             }));
@@ -225,50 +296,6 @@ function numOptions(ans, spread) {
         if (v >= 0 && v !== ans && !cand.includes(v)) cand.push(v);
     }
     return shuffle([ans, ...cand]);
-}
-
-function buildMathElem(difficulty) {
-    const level = difficulty || "medium";
-    let typePool;
-    if (level === "easy") typePool = ["add", "add", "add", "sub", "sub", "pattern"];
-    else if (level === "hard") typePool = ["add", "sub", "mul", "mul", "div", "pattern"];
-    else typePool = ["add", "add", "sub", "sub", "mul", "pattern"];
-    return buildUnique(QUESTIONS_PER_SET, () => {
-        const t = typePool[Math.floor(Math.random() * typePool.length)];
-        if (t === "add") {
-            let a, b;
-            if (level === "easy") { a = 1 + Math.floor(Math.random() * 8); b = 1 + Math.floor(Math.random() * (9 - a)); }
-            else if (level === "hard") { a = 10 + Math.floor(Math.random() * 40); b = 10 + Math.floor(Math.random() * 40); }
-            else { a = 1 + Math.floor(Math.random() * 12); b = 1 + Math.floor(Math.random() * 8); }
-            const ans = a + b;
-            return { prompt: `${a} + ${b} = ?`, stageHTML: "", options: numOptions(ans, [-3, -2, -1, 1, 2, 3]), answer: ans, _key: `add_${a}_${b}` };
-        }
-        if (t === "sub") {
-            let a, b;
-            if (level === "easy") { a = 2 + Math.floor(Math.random() * 8); b = 1 + Math.floor(Math.random() * (a - 1)); }
-            else if (level === "hard") { a = 20 + Math.floor(Math.random() * 30); b = 1 + Math.floor(Math.random() * (a - 1)); }
-            else { a = 10 + Math.floor(Math.random() * 10); b = 1 + Math.floor(Math.random() * (a - 1)); }
-            const ans = a - b;
-            return { prompt: `${a} − ${b} = ?`, stageHTML: "", options: numOptions(ans, [-3, -2, -1, 1, 2, 3]), answer: ans, _key: `sub_${a}_${b}` };
-        }
-        if (t === "mul") {
-            let a, b;
-            if (level === "hard") { a = 2 + Math.floor(Math.random() * 8); b = 2 + Math.floor(Math.random() * 8); }
-            else { a = 2 + Math.floor(Math.random() * 4); b = 2 + Math.floor(Math.random() * 4); }
-            const ans = a * b;
-            return { prompt: `${a} × ${b} = ?`, stageHTML: "", options: numOptions(ans, [-4, -2, -1, 1, 2, 4]), answer: ans, _key: `mul_${a}_${b}` };
-        }
-        if (t === "div") {
-            const b = 2 + Math.floor(Math.random() * 4), q = 2 + Math.floor(Math.random() * 8), a = b * q;
-            return { prompt: `${a} ÷ ${b} = ?`, stageHTML: "", options: numOptions(q, [-2, -1, 1, 2, 3]), answer: q, _key: `div_${a}_${b}` };
-        }
-        const stepPool = level === "hard" ? [3, 4, 6, 7, 9] : [2, 5, 10];
-        const step = stepPool[Math.floor(Math.random() * stepPool.length)];
-        const start = step * (1 + Math.floor(Math.random() * 3));
-        const seq = [start, start + step, start + 2 * step];
-        const ans = start + 3 * step;
-        return { prompt: `${seq.join(", ")}, ? &nbsp;<span style="font-size:.9rem;color:var(--muted)">(counting by ${step}s)</span>`, stageHTML: "", options: numOptions(ans, [-step, step, -2 * step, 1]), answer: ans, _key: `pat_${step}_${start}` };
-    });
 }
 
 function buildAddition(difficulty) {
@@ -375,8 +402,6 @@ function buildEnglish(difficulty) {
         ...synonymQuestions(level),
         ...ENGLISH_EXTRA.filter(q => q.level === level).map(q => ({ ...q, options: shuffle(q.options), _key: q.prompt }))
     ];
-
-    // Deduplicate the pool based on _key or prompt
     const seen = new Set();
     const uniquePool = pool.filter(q => {
         const key = q._key || q.prompt;
@@ -384,7 +409,6 @@ function buildEnglish(difficulty) {
         seen.add(key);
         return true;
     });
-
     return shuffle(uniquePool).slice(0, QUESTIONS_PER_SET)
         .map(q => ({ prompt: q.prompt, stageHTML: "", options: shuffle(q.options), answer: q.answer }));
 }
@@ -454,15 +478,12 @@ const SCIENCE_POOL = [
 function buildScience(difficulty) {
     const level = difficulty || "medium";
     const filtered = SCIENCE_POOL.filter(q => q.level === level);
-
-    // Deduplicate the pool based on prompt
     const seen = new Set();
     const uniquePool = filtered.filter(q => {
         if (seen.has(q.prompt)) return false;
         seen.add(q.prompt);
         return true;
     });
-
     return shuffle(uniquePool).slice(0, QUESTIONS_PER_SET)
         .map(q => ({ prompt: q.prompt, stageHTML: "", options: shuffle(q.options), answer: q.answer }));
 }
@@ -471,6 +492,10 @@ function buildScience(difficulty) {
 function render() {
     const app = document.getElementById('app');
     if (!storageReady) { app.innerHTML = `<div class="loading-wrap"><h2>Loading…</h2><p>Getting your profiles ready</p></div>`; return; }
+
+    const user = auth.currentUser;
+    if (!user) { renderAuth(); return; }
+
     if (profileDraft) { app.innerHTML = addProfileHTML(); attachAddProfile(); return; }
     if (!activeProfileId || !activeProfile()) { app.innerHTML = profileSelectHTML(); attachProfileSelect(); return; }
     if (showDashboard) { app.innerHTML = dashboardHTML(); attachDashboard(); return; }
@@ -493,6 +518,47 @@ function render() {
     if (state.index >= state.questions.length) { app.innerHTML = doneHTML(); attachDone(); return; }
     app.innerHTML = questionHTML();
     attachQuestion();
+}
+
+function renderAuth() {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+      <div class="home-head" style="margin-top:40px">
+        <h1>Learning Adventures</h1>
+        <p>Login to sync your progress across devices!</p>
+      </div>
+      <div class="q-card" style="text-align:left; margin-top:20px;">
+        <p class="field-label">Email</p>
+        <input class="field" type="email" id="authEmail" placeholder="you@example.com">
+        <p class="field-label" style="margin-top:10px">Password</p>
+        <input class="field" type="password" id="authPassword" placeholder="Your password">
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+          <button class="next-btn" id="loginBtn" style="background:var(--violet)">Login</button>
+          <button class="btn-secondary btn-full" id="registerBtn" style="padding:14px; border-radius:16px; font-weight:700; cursor:pointer;">Create Account</button>
+        </div>
+        <p id="authError" style="color:var(--feedback-bad-ink); margin-top:12px; font-size:.9rem;"></p>
+      </div>
+    `;
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+        const email = document.getElementById('authEmail').value;
+        const password = document.getElementById('authPassword').value;
+        try {
+            await loginUser(email, password);
+        } catch (error) {
+            document.getElementById('authError').textContent = error.message;
+        }
+    });
+
+    document.getElementById('registerBtn').addEventListener('click', async () => {
+        const email = document.getElementById('authEmail').value;
+        const password = document.getElementById('authPassword').value;
+        try {
+            await registerUser(email, password);
+        } catch (error) {
+            document.getElementById('authError').textContent = error.message;
+        }
+    });
 }
 
 function profileChipHTML() {
@@ -522,6 +588,7 @@ function profileSelectHTML() {
         <div class="icon">➕</div><h3>Add profile</h3><span class="tag">New learner</span>
       </button>
     </div>
+    <button class="back btn-full" id="logoutBtn" style="margin-top:24px">🚪 Logout</button>
   `;
 }
 function attachProfileSelect() {
@@ -540,6 +607,7 @@ function attachProfileSelect() {
             render();
         });
     });
+    document.getElementById('logoutBtn').addEventListener('click', () => { logoutUser(); });
 }
 
 function addProfileHTML() {
@@ -692,20 +760,6 @@ function attachMathMenu() {
     document.querySelectorAll('[data-mathkey]').forEach(btn => {
         btn.addEventListener('click', () => {
             pendingMathKey = btn.dataset.mathkey;
-            render();
-        });
-    });
-}
-function attachDifficulty() {
-    document.getElementById('subBack').addEventListener('click', () => { pendingSubjectKey = null; render(); });
-    document.querySelectorAll('[data-key]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const difficulty = btn.dataset.key;
-            const key = pendingSubjectKey;
-            const s = SUBJECTS[key];
-            state = { key, color: s.color, difficulty, questions: s.build(difficulty), index: 0, correct: 0, streak: 0 };
-            pendingSubjectKey = null;
-            saveSession();
             render();
         });
     });
