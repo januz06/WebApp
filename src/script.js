@@ -1,3 +1,7 @@
+import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
+
 /* ---------------- Storage layer ---------------- */
 let profiles = [];
 let activeProfileId = null;
@@ -70,13 +74,19 @@ async function loginUser(email, password) {
 }
 
 async function logoutUser() {
-    // Save local state to Firebase before logging out
-    persist();
-    await auth.signOut();
-    activeProfileId = null;
-    profiles = [];
-    storageReady = false;
-    render();
+    document.getElementById('app').innerHTML = '<div class="loading-wrap"><h2>Logging out…</h2></div>';
+    
+    try {
+        persist();
+        await auth.signOut();
+        activeProfileId = null;
+        profiles = [];
+        storageReady = false;
+        render();
+    } catch (error) {
+        console.error("Logout failed:", error);
+        render();
+    }
 }
 
 /* ---------------- Avatars ---------------- */

@@ -3,6 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 const firebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: "learning-adventure-d304a.firebaseapp.com",
     databaseURL: "https://learning-adventure-d304a-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "learning-adventure-d304a",
