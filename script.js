@@ -162,12 +162,14 @@ const SUBJECTS = {
     multiplication: { name: "Multiplication", tag: "Math", icon: "✖️", color: "var(--teal)", build: buildMultiplication },
     division: { name: "Division", tag: "Math", icon: "➗", color: "var(--violet)", build: buildDivision },
     english: { name: "English", tag: "Words & grammar", icon: "📖", color: "var(--sky)", build: buildEnglish },
-    science: { name: "Science", tag: "Explore the world", icon: "🔬", color: "var(--leaf)", build: buildScience }
+    science: { name: "Science", tag: "Explore the world", icon: "🔬", color: "var(--leaf)", build: buildScience },
+    reading: { name: "Reading", tag: "Stories", icon: "📚", color: "var(--indigo)", build: buildReading },
+    writing: { name: "Writing", tag: "Practice", icon: "✍️", color: "var(--indigo)", build: buildWriting }
 };
 
 const AGE_GROUPS = {
     young: { label: "Little Learners", range: "Ages 4–6", icon: "🧸", subjects: ["letters", "numbers", "shapes", "mathYoung"] },
-    elementary: { label: "Elementary", range: "Ages 6–8+", icon: "🎒", subjects: ["math", "english", "science"] }
+    elementary: { label: "Elementary", range: "Ages 6–8+", icon: "🎒", subjects: ["math", "english", "science", "reading", "writing"] }
 };
 
 const DIFFICULTIES = [
@@ -480,6 +482,53 @@ function buildScience(difficulty) {
         .map(q => ({ prompt: q.prompt, stageHTML: "", options: shuffle(q.options), answer: q.answer }));
 }
 
+function buildReading(language = "english") {
+    // Sample stories - you can expand this
+    const stories = {
+        english: [
+            {
+                title: "The Lost Kitten",
+                text: "Once upon a time, a little kitten got lost in the big park. It was scared and meowed loudly. A kind girl heard the kitten and looked for it. Under a big tree, she found the scared kitten. The girl took the kitten home and gave it milk. The kitten was happy and safe.",
+                questions: [
+                    { prompt: "Where did the kitten get lost?", options: ["park", "school", "home"], answer: "park" },
+                    { prompt: "Who helped the kitten?", options: ["a boy", "a girl", "a cat"], answer: "a girl" },
+                    { prompt: "What did the girl give the kitten?", options: ["water", "milk", "food"], answer: "milk" }
+                ]
+            },
+            // Add more English stories here
+        ],
+        tagalog: [
+            {
+                title: "Ang Nawawang Pusa",
+                text: "Isang araw, isang maliit na pusa ang nawalan sa malaking hardin. Takot na takot ang pusa at nagmiyaw nang malakas. Narinig ng isang mabuting bata ang miyaw ng pusa at hinahanap ito. Sa ilalim ng malas na puno, nakita ng bata ang takot na pusa. Inuha ng bata ang pusa sa bahay at binigyan ito ng gatas. Masaya at ligtas na ang pusa.",
+                questions: [
+                    { prompt: "Saan nawalan ang pusa?", options: ["hardin", "eskwela", "bahay"], answer: "hardin" },
+                    { prompt: " sino ang tumulong sa pusa?", options: ["isang lalaki", "isang bata", "isang matanda"], answer: "isang bata" },
+                    { prompt: "Ano ang binigay sa pusa ng bata?", options: ["tubig", "gatas", "pagkain"], answer: "gatas" }
+                ]
+            },
+            // Add more Tagalog stories here
+        ]
+    };
+
+    const selectedStories = shuffle(stories[language]).slice(0, 5);
+    const allQuestions = [];
+
+    selectedStories.forEach(story => {
+        story.questions.forEach(q => {
+            allQuestions.push({
+                prompt: q.prompt,
+                stageHTML: `<div class="story-text">${story.text}</div><h3>${story.title}</h3>`,
+                options: shuffle(q.options),
+                answer: q.answer
+            });
+        });
+    });
+
+    return allQuestions;
+}
+
+
 /* ---------------- Render ---------------- */
 function render() {
     const app = document.getElementById('app');
@@ -729,12 +778,17 @@ function attachSubject() {
                 render();
                 return;
             }
-            // For all other subjects (english, science, etc.), start immediately
+            if (currentAgeGroup() === "elementary" && key === "reading") {
+                // Show language selection for reading
+                pendingSubjectKey = key;
+                renderLanguageSelection();
+                return;
+            }
             const s = SUBJECTS[key];
             state = {
                 key,
                 color: s.color,
-                difficulty: null, // Explicitly set difficulty to null
+                difficulty: null,
                 questions: s.build(),
                 index: 0,
                 correct: 0,
@@ -744,8 +798,6 @@ function attachSubject() {
             render();
         });
     });
-
-
 }
 function difficultyHTML() {
     const s = SUBJECTS[pendingMathKey];
@@ -886,8 +938,8 @@ function doneHTML() {
     const ratio = state.correct / total;
     const starCount = ratio >= 0.8 ? 3 : ratio >= 0.5 ? 2 : 1;
     const stars = "⭐".repeat(starCount) + "✩".repeat(3 - starCount);
-    const diffLabel = state.difficulty ? 
-        `<p class="diff-note">${DIFFICULTIES.find(d => d.key === state.difficulty).label} level</p>` : 
+    const diffLabel = state.difficulty ?
+        `<p class="diff-note">${DIFFICULTIES.find(d => d.key === state.difficulty).label} level</p>` :
         "";
     return `
     <div class="q-card done" style="border-top:8px solid ${s.color}">
@@ -970,5 +1022,46 @@ function attachDashboard() {
     const chip = document.getElementById('chipBtn');
     if (chip) chip.addEventListener('click', () => { activeProfileId = null; showDashboard = false; render(); });
 }
+
+function renderLanguageSelection() {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+        <div class="topbar"><button class="back" id="langBack">← Subjects</button>${profileChipHTML()}</div>
+        <div class="home-head"><h1>Reading</h1><p>Choose a language</p></div>
+        <div class="grid">
+            <button class="card" style="--c:var(--sky)" data-lang="english">
+                <div class="icon">🇬🇧</div><h3>English</h3><span class="tag">Stories in English</span>
+            </button>
+            <button class="card" style="--c:var(--leaf)" data-lang="tagalog">
+                <div class="icon">🇵🇭</div><h3>Tagalog</h3><span class="tag">Mga Kuwento sa Tagalog</span>
+            </button>
+        </div>
+    `;
+
+    document.getElementById('langBack').addEventListener('click', () => {
+        pendingSubjectKey = null;
+        render();
+    });
+
+    document.querySelectorAll('[data-lang]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const language = btn.dataset.lang;
+            const s = SUBJECTS[pendingSubjectKey];
+            state = {
+                key: pendingSubjectKey,
+                color: s.color,
+                difficulty: null,
+                questions: s.build(language),
+                index: 0,
+                correct: 0,
+                streak: 0
+            };
+            pendingSubjectKey = null;
+            saveSession();
+            render();
+        });
+    });
+}
+
 
 initStorage();
