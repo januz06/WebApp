@@ -9,7 +9,7 @@
   "author": "Jayson Caipan",
   "dependencies": {
     "cors": "^2.8.6",
-    "express": "^4.22.3"
+    "express": "^5.2.1"
   },
   "keywords": [],
   "license": "ISC",
