@@ -537,12 +537,18 @@ function renderAuth() {
     document.getElementById('registerBtn').addEventListener('click', async () => {
         const email = document.getElementById('authEmail').value;
         const password = document.getElementById('authPassword').value;
-        try {
-            await registerUser(email, password);
-        } catch (error) {
-            document.getElementById('authError').textContent = error.message;
+
+        const result = await createAccount(email, password);
+
+        if (result.success) {
+            // Account created successfully
+            render();
+        } else {
+            // Show error message
+            document.getElementById('authError').textContent = result.error;
         }
     });
+
 }
 
 function profileChipHTML() {
@@ -575,6 +581,31 @@ function profileSelectHTML() {
     <button class="back btn-full" id="logoutBtn" style="margin-top:24px">🚪 Logout</button>
   `;
 }
+
+// create profile
+async function createAccount(email, password) {
+    // Validate email format
+    if (!email || !password) {
+        return { success: false, error: "Email and password are required" };
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return { success: false, error: "The email address is badly formatted." };
+    }
+
+    try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        console.log("Account created successfully:", user.uid);
+        return { success: true, user };
+    } catch (error) {
+        console.error("Error creating account:", error.message);
+        return { success: false, error: error.message };
+    }
+}
+
 function attachProfileSelect() {
     document.querySelectorAll('[data-id]').forEach(btn => {
         btn.addEventListener('click', () => { setActiveProfile(btn.dataset.id); state = null; render(); });
@@ -683,21 +714,21 @@ function attachSubject() {
     const discardBtn = document.getElementById('discardBtn');
     if (discardBtn) discardBtn.addEventListener('click', () => { clearSession(); render(); });
     document.querySelectorAll('[data-key]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const key = btn.dataset.key;
-        if (currentAgeGroup() === "elementary" && key === "math") { 
-            // Only enter the math menu if the key is specifically "math"
-            pendingSubjectKey = key; 
-            render(); 
-            return; 
-        }
-        // For all other subjects (english, science, etc.), start immediately
-        const s = SUBJECTS[key];
-        state = { key, color: s.color, questions: s.build(), index: 0, correct: 0, streak: 0 };
-        saveSession();
-        render();
+        btn.addEventListener('click', () => {
+            const key = btn.dataset.key;
+            if (currentAgeGroup() === "elementary" && key === "math") {
+                // Only enter the math menu if the key is specifically "math"
+                pendingSubjectKey = key;
+                render();
+                return;
+            }
+            // For all other subjects (english, science, etc.), start immediately
+            const s = SUBJECTS[key];
+            state = { key, color: s.color, questions: s.build(), index: 0, correct: 0, streak: 0 };
+            saveSession();
+            render();
+        });
     });
-});
 
 }
 function difficultyHTML() {
