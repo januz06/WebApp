@@ -1,0 +1,9 @@
+# .gitignore
+
+# Environment variables
+.env
+
+# Other common ignores
+node_modules/
+dist/
+build/

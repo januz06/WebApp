@@ -1,0 +1,17 @@
+{
+  "name": "firebase-proxy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "build": "echo 'No build step needed'"
+  },
+  "author": "Jayson Caipan",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.22.3"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "description": ""
+}
