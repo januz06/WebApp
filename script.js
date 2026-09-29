@@ -96,7 +96,15 @@ function recordSession(subjectKey, subjectName, difficulty, correct, total) {
 function saveSession() {
     const p = activeProfile();
     if (!p || !state) return;
-    p.inProgress = { key: state.key, color: state.color, difficulty: state.difficulty, questions: state.questions, index: state.index, correct: state.correct, streak: state.streak || 0 };
+    p.inProgress = {
+        key: state.key,
+        color: state.color,
+        difficulty: state.difficulty || null, // This will handle undefined difficulty
+        questions: state.questions,
+        index: state.index,
+        correct: state.correct,
+        streak: state.streak || 0
+    };
     persist();
 }
 
@@ -717,18 +725,26 @@ function attachSubject() {
         btn.addEventListener('click', () => {
             const key = btn.dataset.key;
             if (currentAgeGroup() === "elementary" && key === "math") {
-                // Only enter the math menu if the key is specifically "math"
                 pendingSubjectKey = key;
                 render();
                 return;
             }
             // For all other subjects (english, science, etc.), start immediately
             const s = SUBJECTS[key];
-            state = { key, color: s.color, questions: s.build(), index: 0, correct: 0, streak: 0 };
+            state = {
+                key,
+                color: s.color,
+                difficulty: null, // Explicitly set difficulty to null
+                questions: s.build(),
+                index: 0,
+                correct: 0,
+                streak: 0
+            };
             saveSession();
             render();
         });
     });
+
 
 }
 function difficultyHTML() {
@@ -870,7 +886,9 @@ function doneHTML() {
     const ratio = state.correct / total;
     const starCount = ratio >= 0.8 ? 3 : ratio >= 0.5 ? 2 : 1;
     const stars = "⭐".repeat(starCount) + "✩".repeat(3 - starCount);
-    const diffLabel = state.difficulty ? `<p class="diff-note">${DIFFICULTIES.find(d => d.key === state.difficulty).label} level</p>` : "";
+    const diffLabel = state.difficulty ? 
+        `<p class="diff-note">${DIFFICULTIES.find(d => d.key === state.difficulty).label} level</p>` : 
+        "";
     return `
     <div class="q-card done" style="border-top:8px solid ${s.color}">
       <div class="stars">${stars}</div>
@@ -885,6 +903,7 @@ function doneHTML() {
     </div>
   `;
 }
+
 function attachDone() {
     const s = SUBJECTS[state.key];
     const ratio = state.correct / state.questions.length;
