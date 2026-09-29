@@ -528,6 +528,43 @@ function buildReading(language = "english") {
     return allQuestions;
 }
 
+function buildWriting(difficulty) {
+    const level = difficulty || "medium";
+    const writingPrompts = {
+        easy: [
+            "Write a sentence about your favorite animal.",
+            "Write a sentence about your best friend.",
+            "Write a sentence about your favorite food.",
+            "Write a sentence about your family.",
+            "Write a sentence about your school."
+        ],
+        medium: [
+            "Write a paragraph about your dream vacation.",
+            "Write a paragraph about your favorite book.",
+            "Write a paragraph about your best day ever.",
+            "Write a paragraph about your favorite season.",
+            "Write a paragraph about what you want to be when you grow up."
+        ],
+        hard: [
+            "Write a story about a magical adventure.",
+            "Write a story about a mystery that needs solving.",
+            "Write a story about a friendship that overcame challenges.",
+            "Write a story about discovering something new.",
+            "Write a story about helping someone in need."
+        ]
+    };
+
+    const prompts = writingPrompts[level];
+    const selectedPrompts = shuffle(prompts).slice(0, 5);
+
+    return selectedPrompts.map((prompt, index) => ({
+        prompt: prompt,
+        stageHTML: `<div class="writing-prompt"><h3>Writing Prompt ${index + 1}</h3><p>${prompt}</p></div>`,
+        options: [], // No multiple choice for writing
+        answer: "", // No correct answer for writing
+        isWriting: true
+    }));
+}
 
 /* ---------------- Render ---------------- */
 function render() {
@@ -862,7 +899,12 @@ function questionHTML() {
     const pct = Math.round((state.index / state.questions.length) * 100);
     let stage = q.stageHTML ? `<div class="stage">${q.stageHTML}</div>` : "";
     let optionsBlock;
-    if (q.isShapeQ) {
+    if (q.isWriting) {
+        optionsBlock = `<div class="writing-area">
+        <textarea class="writing-input" id="writingInput" placeholder="Start writing here..."></textarea>
+        <button class="next-btn" id="nextBtn" style="background:${s.color}">Next</button>
+    </div>`;
+    } else if (q.isShapeQ) {
         optionsBlock = `<div class="options">` + q.optionsHTML.map(o => {
             const shapeDef = SHAPES.find(x => x.name === o.name);
             return `<button class="opt" data-val="${o.name}">${shapeDef.svg(o.color)}</button>`;
@@ -894,42 +936,58 @@ function attachQuestion() {
     const fb = document.getElementById('fb');
     const nextBtn = document.getElementById('nextBtn');
     let locked = false;
-    document.querySelectorAll('.opt').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (locked) return;
-            locked = true;
-            const val = btn.dataset.val;
-            const isCorrect = String(val) === String(q.answer);
-            document.querySelectorAll('.opt').forEach(b => {
-                b.disabled = true;
-                if (String(b.dataset.val) === String(q.answer)) b.classList.add('correct');
-                else if (b === btn) b.classList.add('wrong');
-            });
-            if (isCorrect) {
-                state.correct++; state.streak = (state.streak || 0) + 1;
-                fb.textContent = pick(GOOD_PHRASES); fb.className = "feedback good";
-                playCorrect();
-            } else {
-                state.streak = 0;
-                fb.textContent = pick(BAD_PHRASES); fb.className = "feedback bad";
-                playWrong();
-            }
-            saveSession();
-            nextBtn.disabled = false;
+    if (q.isWriting) {
+        const writingInput = document.getElementById('writingInput');
+        const nextBtn = document.getElementById('nextBtn');
+
+        writingInput.addEventListener('input', () => {
+            nextBtn.disabled = !writingInput.value.trim();
         });
-    });
-    nextBtn.addEventListener('click', () => {
-        state.index++;
-        if (state.index >= state.questions.length) {
-            const s = SUBJECTS[state.key];
-            recordSession(state.key, s.name, state.difficulty, state.correct, state.questions.length);
-            clearSession();
-            playFinish();
-        } else {
+
+        nextBtn.addEventListener('click', () => {
+            // Save the writing response if needed
+            state.index++;
             saveSession();
-        }
-        render();
-    });
+            render();
+        });
+    } else {
+        document.querySelectorAll('.opt').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (locked) return;
+                locked = true;
+                const val = btn.dataset.val;
+                const isCorrect = String(val) === String(q.answer);
+                document.querySelectorAll('.opt').forEach(b => {
+                    b.disabled = true;
+                    if (String(b.dataset.val) === String(q.answer)) b.classList.add('correct');
+                    else if (b === btn) b.classList.add('wrong');
+                });
+                if (isCorrect) {
+                    state.correct++; state.streak = (state.streak || 0) + 1;
+                    fb.textContent = pick(GOOD_PHRASES); fb.className = "feedback good";
+                    playCorrect();
+                } else {
+                    state.streak = 0;
+                    fb.textContent = pick(BAD_PHRASES); fb.className = "feedback bad";
+                    playWrong();
+                }
+                saveSession();
+                nextBtn.disabled = false;
+            });
+        });
+        nextBtn.addEventListener('click', () => {
+            state.index++;
+            if (state.index >= state.questions.length) {
+                const s = SUBJECTS[state.key];
+                recordSession(state.key, s.name, state.difficulty, state.correct, state.questions.length);
+                clearSession();
+                playFinish();
+            } else {
+                saveSession();
+            }
+            render();
+        });
+    }
 }
 
 function doneHTML() {
@@ -1062,6 +1120,5 @@ function renderLanguageSelection() {
         });
     });
 }
-
 
 initStorage();

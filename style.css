@@ -721,3 +721,23 @@ h3,
     background: var(--violet);
     margin-bottom: 8px;
 }
+
+.writing-area {
+    margin: 20px 0;
+}
+
+.writing-input {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    border: 2px solid var(--violet);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.writing-input:focus {
+    outline: none;
+    border-color: var(--sky);
+}
