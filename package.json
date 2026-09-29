@@ -1,0 +1,27 @@
+{
+  "name": "WebApp",
+  "version": "1.0.0",
+  "description": "An interactive learning app for kids ages 4–8. Pick a profile, choose an age level, and practice letters, counting, shapes, math, English, or science through short, click-to-answer worksheets — with a progress dashboard for each kid.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/januz06/WebApp.git"
+  },
+  "keywords": [],
+  "author": "jayson caipan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/januz06/WebApp/issues"
+  },
+  "homepage": "https://github.com/januz06/WebApp#readme",
+  "dependencies": {
+    "firebase": "^12.19.0"
+  },
+  "devDependencies": {
+    "vite": "^8.3.1"
+  }
+}
