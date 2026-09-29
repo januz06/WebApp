@@ -1,6 +1,6 @@
 /* ---------------- Firebase Setup ---------------- */
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -34,4 +34,18 @@ async function firebaseRequest(path, options = {}) {
   return response.json();
 }
 
-export { auth, firebaseRequest };
+// Add auth state observer
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // User is signed in, you can initialize the app
+        initStorage();
+    } else {
+        // User is signed out, clear the UI
+        activeProfileId = null;
+        profiles = [];
+        storageReady = false;
+        render();
+    }
+});
+
+export { auth, firebaseRequest, onAuthStateChanged };

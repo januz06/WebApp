@@ -1,4 +1,4 @@
-import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 const auth = getAuth();
 
@@ -74,10 +74,10 @@ async function loginUser(email, password) {
 }
 
 async function logoutUser() {
-    document.getElementById('app').innerHTML = '<div class="loading-wrap"><h2>Logging out…</h2></div>';
+    showLoading();
     
     try {
-        persist();
+        await persist();
         await auth.signOut();
         activeProfileId = null;
         profiles = [];
@@ -85,8 +85,29 @@ async function logoutUser() {
         render();
     } catch (error) {
         console.error("Logout failed:", error);
-        render();
+        renderError("Failed to logout. Please try again.");
     }
+}
+
+function showLoading() {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+        <div class="loading-wrap">
+            <h2>Logging out...</h2>
+            <div class="spinner"></div>
+        </div>
+    `;
+}
+
+function renderError(message) {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+        <div class="error-message">
+            <h2>Oops!</h2>
+            <p>${message}</p>
+            <button onclick="location.reload()">Try Again</button>
+        </div>
+    `;
 }
 
 /* ---------------- Avatars ---------------- */
