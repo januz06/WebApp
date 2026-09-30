@@ -77,11 +77,24 @@ async function logoutUser() {
     showLoading();
     
     try {
-        await persist();
+        // Clear any pending session
+        clearSession();
+        
+        // Sign out from Firebase
         await auth.signOut();
+        
+        // Clear local storage
+        localStorage.removeItem('la_profiles_v1');
+        localStorage.removeItem('la_active_profile');
+        
+        // Reset state
         activeProfileId = null;
         profiles = [];
         storageReady = false;
+        state = null;
+        showDashboard = false;
+        
+        // Redirect to login page
         render();
     } catch (error) {
         console.error("Logout failed:", error);
