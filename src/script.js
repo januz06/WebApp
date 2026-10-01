@@ -21,7 +21,7 @@ function persist() {
 }
 
 function initStorage() {
-    onAuthStateChanged(auth, async (user) => {
+    auth.onAuthStateChanged(async (user) => {
         if (user) {
             try {
                 const snapshot = await db.ref('users/' + user.uid).once('value');
@@ -66,20 +66,18 @@ function activeProfile() { return profiles.find(p => p.id === activeProfileId) |
 
 /* ---------------- Auth Functions ---------------- */
 async function loginUser(email, password) {
-    await signInWithEmailAndPassword(auth, email, password);
+    await auth.signInWithEmailAndPassword( email, password);
 }
 
 async function logoutUser() {
     showLoading();
 
     try {
-        // Clear any pending session
-        clearSession();
-
         // Sign out from Firebase
-        await signOut(auth);
+        await auth.signOut();
 
         // Clear local storage
+        clearSession();
         localStorage.removeItem('la_profiles_v1');
         localStorage.removeItem('la_active_profile');
 
