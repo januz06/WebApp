@@ -65,17 +65,11 @@ function setActiveProfile(id) {
 function activeProfile() { return profiles.find(p => p.id === activeProfileId) || null; }
 
 /* ---------------- Auth Functions ---------------- */
-async function registerUser(email, password) {
-    await auth.createUserWithEmailAndPassword(email, password);
-}
-
 async function loginUser(email, password) {
     await auth.signInWithEmailAndPassword(email, password);
 }
 
 async function logoutUser() {
-    showLoading();
-    
     try {
         // Clear any pending session
         clearSession();
@@ -93,34 +87,10 @@ async function logoutUser() {
         storageReady = false;
         state = null;
         showDashboard = false;
-        
-        // Redirect to login page
-        render();
     } catch (error) {
         console.error("Logout failed:", error);
-        renderError("Failed to logout. Please try again.");
+        render(); 
     }
-}
-
-function showLoading() {
-    const app = document.getElementById('app');
-    app.innerHTML = `
-        <div class="loading-wrap">
-            <h2>Logging out...</h2>
-            <div class="spinner"></div>
-        </div>
-    `;
-}
-
-function renderError(message) {
-    const app = document.getElementById('app');
-    app.innerHTML = `
-        <div class="error-message">
-            <h2>Oops!</h2>
-            <p>${message}</p>
-            <button onclick="location.reload()">Try Again</button>
-        </div>
-    `;
 }
 
 /* ---------------- Avatars ---------------- */
