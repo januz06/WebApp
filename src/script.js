@@ -1,4 +1,4 @@
-import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
+import { getAuth, signOut, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 
 const auth = getAuth();
 
@@ -21,7 +21,7 @@ function persist() {
 }
 
 function initStorage() {
-    onAuthStateChanged(auth,async (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
             try {
                 const snapshot = await db.ref('users/' + user.uid).once('value');
@@ -66,34 +66,34 @@ function activeProfile() { return profiles.find(p => p.id === activeProfileId) |
 
 /* ---------------- Auth Functions ---------------- */
 async function loginUser(email, password) {
-    await auth.signInWithEmailAndPassword(email, password);
+    await signInWithEmailAndPassword(auth, email, password);
 }
 
 async function logoutUser() {
+    showLoading();
+
     try {
-        showLoading();
         // Clear any pending session
         clearSession();
-        
+
         // Sign out from Firebase
         await signOut(auth);
-        
+
         // Clear local storage
         localStorage.removeItem('la_profiles_v1');
         localStorage.removeItem('la_active_profile');
-        
-        // Reset state
+
+        // Reset application state.
         activeProfileId = null;
         profiles = [];
-        storageReady = false;
         state = null;
         showDashboard = false;
-        
+
         render();
     } catch (error) {
         console.error("Logout failed:", error);
         storageReady = true;
-        renderError("Failed to logout. Please try again."); 
+        renderError("Failed to logout. Please try again.");
     }
 }
 
