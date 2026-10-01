@@ -778,4 +778,45 @@ h3,
     margin-top: 16px;
 }
 
+/* Make FontAwesome icons behave like emojis inside avatar elements */
+.avatar-circle i,
+.avatar-opt i,
+.mini-avatar i {
+  font-size: inherit;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Ensure the avatar selection buttons size correctly */
+.avatar-opt {
+  font-size: 1.8rem; 
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure the profile chip avatars size correctly */
+.mini-avatar {
+  font-size: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+}
+
+/* Ensure the profile card avatars size correctly */
+.avatar-circle {
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--violet);
+  margin-bottom: 8px;
+}
 
