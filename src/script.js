@@ -1,4 +1,4 @@
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
@@ -21,7 +21,7 @@ function persist() {
 }
 
 function initStorage() {
-    auth.onAuthStateChanged(async (user) => {
+    onAuthStateChanged(auth,async (user) => {
         if (user) {
             try {
                 const snapshot = await db.ref('users/' + user.uid).once('value');
@@ -71,11 +71,12 @@ async function loginUser(email, password) {
 
 async function logoutUser() {
     try {
+        showLoading();
         // Clear any pending session
         clearSession();
         
         // Sign out from Firebase
-        await auth.signOut();
+        await signOut(auth);
         
         // Clear local storage
         localStorage.removeItem('la_profiles_v1');
@@ -87,15 +88,55 @@ async function logoutUser() {
         storageReady = false;
         state = null;
         showDashboard = false;
+        
+        render();
     } catch (error) {
         console.error("Logout failed:", error);
-        render(); 
+        storageReady = true;
+        renderError("Failed to logout. Please try again."); 
     }
 }
 
+function showLoading() {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+        <div class="loading-wrap">
+            <h2>Logging out...</h2>
+            <div class="spinner"></div>
+        </div>
+    `;
+}
+
+function renderError(message) {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+        <div class="error-message">
+            <h2>Oops!</h2>
+            <p>${message}</p>
+            <button onclick="location.reload()">Try Again</button>
+        </div>
+    `;
+}
+
 /* ---------------- Avatars ---------------- */
-const ANIMAL_ICONS = ["🐶", "🐱", "🐰", "🦊", "🐼", "🐨", "🦁", "🐯", "🐵", "🐸", "🐷", "🐻", "🦄", "🐹", "🐢", "🐧"];
-const PERSON_ICONS = ["👶", "👦", "👧"];
+const ANIMAL_ICONS = [
+  '<i class="fa-solid fa-dog"></i>', 
+  '<i class="fa-solid fa-cat"></i>', 
+  '<i class="fa-solid fa-fish"></i>', 
+  '<i class="fa-solid fa-horse"></i>', 
+  '<i class="fa-solid fa-spider"></i>', 
+  '<i class="fa-solid fa-crow"></i>', 
+  '<i class="fa-solid fa-frog"></i>', 
+  '<i class="fa-solid fa-hippo"></i>', 
+  '<i class="fa-solid fa-otter"></i>', 
+  '<i class="fa-solid fa-dragon"></i>'
+];
+
+const PERSON_ICONS = [
+  '<i class="fa-solid fa-child"></i>', 
+  '<i class="fa-solid fa-child-dress"></i>', 
+  '<i class="fa-solid fa-user"></i>'
+];
 const AVATARS = [...PERSON_ICONS, ...ANIMAL_ICONS];
 
 function recordSession(subjectKey, subjectName, difficulty, correct, total) {
