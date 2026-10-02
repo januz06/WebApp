@@ -746,12 +746,15 @@ async function createAccount(email, password) {
 
     try {
         const { createUserWithEmailAndPassword } = await import('firebase/auth');
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+        const user = await createUserWithEmailAndPassword(auth, email, password);
+        
         console.log("Account created successfully:", user.uid);
         return { success: true, user };
     } catch (error) {
         console.error("Error creating account:", error.message);
+        if (error.code === 'auth/invalid-email') {
+            return { success: false, error: "Invalid email format." };
+        }
         return { success: false, error: error.message };
     }
 }
@@ -865,7 +868,7 @@ function attachSubject() {
     if (discardBtn) discardBtn.addEventListener('click', () => { clearSession(); render(); });
     document.querySelectorAll('[data-key]').forEach(btn => {
         btn.addEventListener('click', () => {
-            const key = btn.dataset.key;
+            const { key } = btn.dataset;
             if (currentAgeGroup() === "elementary" && key === "math") {
                 pendingSubjectKey = key;
                 render();
@@ -1011,7 +1014,7 @@ function attachQuestion() {
             btn.addEventListener('click', () => {
                 if (locked) return;
                 locked = true;
-                const val = btn.dataset.val;
+                const { val } = btn.dataset;
                 const isCorrect = String(val) === String(q.answer);
                 document.querySelectorAll('.opt').forEach(b => {
                     b.disabled = true;
@@ -1075,8 +1078,8 @@ function attachDone() {
     const ratio = state.correct / state.questions.length;
     if (ratio >= 0.8) { launchConfetti(); }
     document.getElementById('again').addEventListener('click', () => {
-        const key = state.key;
-        const difficulty = state.difficulty;
+        const { key } = state;
+        const { difficulty } = state.difficulty;
         state = { key, color: s.color, difficulty, questions: s.build(difficulty), index: 0, correct: 0, streak: 0 };
         saveSession();
         render();
