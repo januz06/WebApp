@@ -1,6 +1,8 @@
-import { getAuth, signOut, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { signOut, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "./firebase-config.js";
+import { getDatabase, ref, set, get } from "firebase/database";
+const db = getDatabase();
 
-const auth = getAuth();
 
 /* ---------------- Storage layer ---------------- */
 let profiles = [];
@@ -8,23 +10,23 @@ let activeProfileId = null;
 let storageReady = false;
 let pendingMathKey = null;
 
-function persist() {
+async function persist() {
     const user = auth.currentUser;
     if (user) {
-        db.ref('users/' + user.uid).set({
+        await set(ref(db, 'users/' + user.uid), {
             profiles: profiles,
             activeProfileId: activeProfileId
-        }).catch(e => console.error("Firebase persist error:", e));
+        });
     } else {
         try { localStorage.setItem('la_profiles_v1', JSON.stringify({ profiles })); } catch (e) { }
     }
 }
 
 function initStorage() {
-    auth.onAuthStateChanged(async (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
             try {
-                const snapshot = await db.ref('users/' + user.uid).once('value');
+                const snapshot = await get(ref(db, 'users/' + user.uid));
                 if (snapshot.exists()) {
                     const data = snapshot.val();
                     profiles = data.profiles || [];
@@ -52,11 +54,11 @@ function initStorage() {
     });
 }
 
-function setActiveProfile(id) {
+async function setActiveProfile(id) {
     activeProfileId = id;
     const user = auth.currentUser;
     if (user) {
-        db.ref('users/' + user.uid + '/activeProfileId').set(id).catch(e => console.error(e));
+        await set(ref(db, 'users/' + user.uid + '/activeProfileId'), id);
     } else {
         try { localStorage.setItem('la_active_profile', id); } catch (e) { }
     }
@@ -66,15 +68,15 @@ function activeProfile() { return profiles.find(p => p.id === activeProfileId) |
 
 /* ---------------- Auth Functions ---------------- */
 async function loginUser(email, password) {
-    await auth.signInWithEmailAndPassword( email, password);
+    await signInWithEmailAndPassword(auth, email, password);
 }
 
 async function logoutUser() {
     showLoading();
 
     try {
-        // Sign out from Firebase
-        await auth.signOut();
+        // Correct modular SDK syntax
+        await signOut(auth);
 
         // Clear local storage
         clearSession();
@@ -743,7 +745,8 @@ async function createAccount(email, password) {
     }
 
     try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const { createUserWithEmailAndPassword } = await import('firebase/auth');
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         console.log("Account created successfully:", user.uid);
         return { success: true, user };
