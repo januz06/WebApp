@@ -1,30 +1,26 @@
-function shuffle(arr) { return fisherYatesShuffle(arr); }
+/* ====== PERSISTENCE LAYER (Cleaner Structure) ====== */
+function persistProfile(profile = null) {
+    const p = profile || activeProfile();
+    if (!p) return;
 
-function fisherYatesShuffle(arr) {
-    const copy = [...arr];
-    for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
+    const profiles = JSON.parse(localStorage.getItem('profiles') || '[]');
+    const idx = profiles.findIndex(pr => pr.id === p.id);
+    
+    if (idx >= 0) {
+        profiles[idx] = p;
+    } else {
+        profiles.push(p);
     }
-    return copy;
+    
+    localStorage.setItem('profiles', JSON.stringify(profiles));
+    localStorage.setItem('activeProfile', p.id);
 }
 
-function buildUnique(count, genOne, maxTries) {
-    const out = [], seen = new Set();
-    let tries = 0; maxTries = maxTries || count * 60;
-    while (out.length < count && tries < maxTries) {
-        tries++;
-        const q = genOne();
-        if (!q) continue;
-        const k = q._key !== undefined ? q._key : q.prompt;
-        if (seen.has(k)) continue;
-        seen.add(k);
-        delete q._key;
-        out.push(q);
-    }
-    return out;
+function persist() {
+    persistProfile();
 }
 
+/* ====== QUESTION KEY NORMALIZATION ====== */
 function getQuestionKey(question) {
     if (!question) return '';
     return question._key !== undefined ? String(question._key) : String(question.prompt);
@@ -56,7 +52,116 @@ function markQuestionAnswered(question) {
     const nextSet = new Set(p.answeredQuestions);
     nextSet.add(key);
     p.answeredQuestions = Array.from(nextSet);
-    persist();
+    persistProfile(p);
+}
+
+/* ====== PROFILE-SPECIFIC QUESTION GENERATION ====== */
+function buildQuestionSetForProfile(subjectKey, difficulty = null, language = null) {
+    const subject = SUBJECTS[subjectKey];
+    if (!subject || typeof subject.build !== 'function') return [];
+
+    let questions = language
+        ? subject.build(language)
+        : difficulty !== null
+            ? subject.build(difficulty)
+            : subject.build();
+
+    questions = filterAnsweredQuestions(questions);
+    return questions;
+}
+
+function initializeWorksheetState(key, difficulty = null, language = null) {
+    const subject = SUBJECTS[key];
+    if (!subject || typeof subject.build !== 'function') return false;
+
+    const questions = buildQuestionSetForProfile(key, difficulty, language);
+    
+    if (questions.length === 0) {
+        return false;
+    }
+
+    state = {
+        key,
+        color: subject.color,
+        difficulty,
+        questions,
+        index: 0,
+        correct: 0,
+        streak: 0
+    };
+
+    saveSession();
+    return true;
+}
+
+function getAnsweredCountForSubject(subjectKey) {
+    const p = activeProfile();
+    if (!p) return 0;
+
+    const answered = new Set(p.answeredQuestions || []);
+    const subject = SUBJECTS[subjectKey];
+    if (!subject || typeof subject.build !== 'function') return 0;
+
+    const allQuestions = subject.build();
+    return allQuestions.filter(q => answered.has(getQuestionKey(q))).length;
+}
+
+function getTotalQuestionsForSubject(subjectKey) {
+    const subject = SUBJECTS[subjectKey];
+    if (!subject || typeof subject.build !== 'function') return 0;
+    return subject.build().length;
+}
+
+/* ====== UI POLISH FOR REPEATED SESSIONS ====== */
+function getSubjectProgressText(subjectKey) {
+    const answered = getAnsweredCountForSubject(subjectKey);
+    if (answered === 0) return '';
+    const total = getTotalQuestionsForSubject(subjectKey);
+    return ` · ${answered}/${total} answered`;
+}
+
+function shouldShowNewQuestionsNotification(subjectKey) {
+    const p = activeProfile();
+    if (!p || !p.lastNotifiedSubjects) return false;
+    return !p.lastNotifiedSubjects.includes(subjectKey);
+}
+
+function markSubjectNotified(subjectKey) {
+    const p = activeProfile();
+    if (!p) return;
+    p.lastNotifiedSubjects = Array.isArray(p.lastNotifiedSubjects) ? p.lastNotifiedSubjects : [];
+    if (!p.lastNotifiedSubjects.includes(subjectKey)) {
+        p.lastNotifiedSubjects.push(subjectKey);
+    }
+    persistProfile(p);
+}
+
+/* ====== SHUFFLE & UTILITY ====== */
+function shuffle(arr) { return fisherYatesShuffle(arr); }
+
+function fisherYatesShuffle(arr) {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+}
+
+function buildUnique(count, genOne, maxTries) {
+    const out = [], seen = new Set();
+    let tries = 0; maxTries = maxTries || count * 60;
+    while (out.length < count && tries < maxTries) {
+        tries++;
+        const q = genOne();
+        if (!q) continue;
+        const k = q._key !== undefined ? q._key : q.prompt;
+        if (seen.has(k)) continue;
+        seen.add(k);
+        delete q._key;
+        out.push(q);
+    }
+    return out;
 }
 
 function fitFont(text, base, min) {
@@ -128,50 +233,8 @@ function renderScreen(view) {
     app.innerHTML = '<div class="loading-wrap"><h2>Loading…</h2></div>';
 }
 
-function getProfileQuestionKey(question) {
-    if (!question) return '';
-    return question._key !== undefined ? String(question._key) : String(question.prompt);
-}
-
-function getProfileAnsweredQuestionKeys() {
-    const p = activeProfile();
-    if (!p) return new Set();
-    p.answeredQuestions = Array.isArray(p.answeredQuestions) ? p.answeredQuestions : [];
-    return new Set(p.answeredQuestions);
-}
-
-function filterAnsweredQuestions(questions) {
-    const answered = getProfileAnsweredQuestionKeys();
-    if (!answered.size || !Array.isArray(questions)) return questions || [];
-    return questions.filter(q => !answered.has(getProfileQuestionKey(q)));
-}
-
-function markQuestionAnswered(question) {
-    const p = activeProfile();
-    if (!p || !question) return;
-    p.answeredQuestions = Array.isArray(p.answeredQuestions) ? p.answeredQuestions : [];
-    const key = getProfileQuestionKey(question);
-    if (!key) return;
-
-    const nextSet = new Set(p.answeredQuestions);
-    nextSet.add(key);
-    p.answeredQuestions = Array.from(nextSet);
-    persist();
-}
-
 function questionHTML() {
     const s = SUBJECTS[state.key];
-    let qset = subject.build(difficulty);
-    qset = filterAnsweredQuestions(qset);
-    state = {
-      key,
-      color: s.color,
-      difficulty,
-      questions: qset,
-      index: 0,
-      correct: 0,
-      streak: 0
-    };
     const q = state.questions[state.index];
     const pct = Math.round((state.index / state.questions.length) * 100);
     let stage = q.stageHTML ? `<div class="stage">${q.stageHTML}</div>` : "";
@@ -246,11 +309,13 @@ function attachQuestion() {
             });
 
             if (isCorrect) {
-              state.correct++;
-              state.streak = (state.streak || 0) + 1;
-              markQuestionAnswered(q);
+                state.correct++; state.streak = (state.streak || 0) + 1;
+                fb.textContent = pick(GOOD_PHRASES); fb.className = "feedback good";
+                playCorrect();
             } else {
-              state.streak = 0;
+                state.streak = 0;
+                fb.textContent = pick(BAD_PHRASES); fb.className = "feedback bad";
+                playWrong();
             }
 
             markQuestionAnswered(q);
@@ -278,76 +343,10 @@ function attachQuestion() {
 if (typeof window !== 'undefined') {
     window.getCachedQuestions = getCachedQuestions;
     window.renderScreen = renderScreen;
+    window.getQuestionKey = getQuestionKey;
+    window.filterAnsweredQuestions = filterAnsweredQuestions;
+    window.markQuestionAnswered = markQuestionAnswered;
+    window.buildQuestionSetForProfile = buildQuestionSetForProfile;
+    window.initializeWorksheetState = initializeWorksheetState;
+    window.getSubjectProgressText = getSubjectProgressText;
 }
-
-// Per-profile speaking of answered questions in generated worksheets
-function getAnsweredQuestionSet() {
-    const p = activeProfile();
-    if (!p) return new Set();
-    p.answeredQuestions = Array.isArray(p.answeredQuestions) ? p.answeredQuestions : [];
-    return new Set(p.answeredQuestions);
-}
-
-function withAnsweredFilters(questions) {
-    const answered = getAnsweredQuestionSet();
-    if (!answered.size) return questions;
-    return questions.filter(q => {
-        const key = q._key !== undefined ? String(q._key) : String(q.prompt);
-        return !answered.has(key);
-    });
-}
-
-function loadQuestionSet(subjectKey, difficulty = null, language = null) {
-    const subject = SUBJECTS[subjectKey];
-    if (!subject || typeof subject.build !== 'function') return [];
-
-    let questions = language
-        ? subject.build(language)
-        : difficulty !== null
-            ? subject.build(difficulty)
-            : subject.build();
-
-    questions = withAnsweredFilters(questions);
-    if (questions.length === 0) return [];
-    return questions;
-}
-
-function rebuildWorksheetState(key, difficulty = null, language = null) {
-    const subject = SUBJECTS[key];
-    if (!subject || typeof subject.build !== 'function') return;
-
-    let questions = language
-        ? subject.build(language)
-        : difficulty !== null
-            ? subject.build(difficulty)
-            : subject.build();
-
-    questions = withAnsweredFilters(questions);
-    if (questions.length === 0) {
-        state = {
-            key,
-            color: subject.color,
-            difficulty,
-            questions: [],
-            index: 0,
-            correct: 0,
-            streak: 0
-        };
-        return;
-    }
-
-    state = {
-        key,
-        color: subject.color,
-        difficulty,
-        questions,
-        index: 0,
-        correct: 0,
-        streak: 0
-    };
-}
-
-// The main state creation points now use answered-question filtering.
-// Example:
-// const s = SUBJECTS[key];
-// state = { key, color: s.color, difficulty: null, questions: withAnsweredFilters(s.build()), index: 0, correct: 0, streak: 0 };
