@@ -5,9 +5,7 @@ const APP_SHELL = [
   './src/style.css',
   './src/script.js',
   './src/firebase-config.js',
-  './src/manifest.json',
-  './images/favicon.ico',
-  './images/favicon.png'
+  './src/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
