@@ -94,6 +94,37 @@ function renderScreen(view) {
     app.innerHTML = '<div class="loading-wrap"><h2>Loading…</h2></div>';
 }
 
+function getProfileQuestionKey(question) {
+    if (!question) return '';
+    return question._key !== undefined ? String(question._key) : String(question.prompt);
+}
+
+function getProfileAnsweredQuestionKeys() {
+    const p = activeProfile();
+    if (!p) return new Set();
+    p.answeredQuestions = Array.isArray(p.answeredQuestions) ? p.answeredQuestions : [];
+    return new Set(p.answeredQuestions);
+}
+
+function filterAnsweredQuestions(questions) {
+    const answered = getProfileAnsweredQuestionKeys();
+    if (!answered.size || !Array.isArray(questions)) return questions || [];
+    return questions.filter(q => !answered.has(getProfileQuestionKey(q)));
+}
+
+function markQuestionAnswered(question) {
+    const p = activeProfile();
+    if (!p || !question) return;
+    p.answeredQuestions = Array.isArray(p.answeredQuestions) ? p.answeredQuestions : [];
+    const key = getProfileQuestionKey(question);
+    if (!key) return;
+
+    const nextSet = new Set(p.answeredQuestions);
+    nextSet.add(key);
+    p.answeredQuestions = Array.from(nextSet);
+    persist();
+}
+
 function questionHTML() {
     const s = SUBJECTS[state.key];
     const q = state.questions[state.index];
@@ -179,6 +210,7 @@ function attachQuestion() {
                 playWrong();
             }
 
+            markQuestionAnswered(q);
             saveSession();
             nextBtn.disabled = false;
         });
@@ -204,3 +236,75 @@ if (typeof window !== 'undefined') {
     window.getCachedQuestions = getCachedQuestions;
     window.renderScreen = renderScreen;
 }
+
+// Per-profile speaking of answered questions in generated worksheets
+function getAnsweredQuestionSet() {
+    const p = activeProfile();
+    if (!p) return new Set();
+    p.answeredQuestions = Array.isArray(p.answeredQuestions) ? p.answeredQuestions : [];
+    return new Set(p.answeredQuestions);
+}
+
+function withAnsweredFilters(questions) {
+    const answered = getAnsweredQuestionSet();
+    if (!answered.size) return questions;
+    return questions.filter(q => {
+        const key = q._key !== undefined ? String(q._key) : String(q.prompt);
+        return !answered.has(key);
+    });
+}
+
+function loadQuestionSet(subjectKey, difficulty = null, language = null) {
+    const subject = SUBJECTS[subjectKey];
+    if (!subject || typeof subject.build !== 'function') return [];
+
+    let questions = language
+        ? subject.build(language)
+        : difficulty !== null
+            ? subject.build(difficulty)
+            : subject.build();
+
+    questions = withAnsweredFilters(questions);
+    if (questions.length === 0) return [];
+    return questions;
+}
+
+function rebuildWorksheetState(key, difficulty = null, language = null) {
+    const subject = SUBJECTS[key];
+    if (!subject || typeof subject.build !== 'function') return;
+
+    let questions = language
+        ? subject.build(language)
+        : difficulty !== null
+            ? subject.build(difficulty)
+            : subject.build();
+
+    questions = withAnsweredFilters(questions);
+    if (questions.length === 0) {
+        state = {
+            key,
+            color: subject.color,
+            difficulty,
+            questions: [],
+            index: 0,
+            correct: 0,
+            streak: 0
+        };
+        return;
+    }
+
+    state = {
+        key,
+        color: subject.color,
+        difficulty,
+        questions,
+        index: 0,
+        correct: 0,
+        streak: 0
+    };
+}
+
+// The main state creation points now use answered-question filtering.
+// Example:
+// const s = SUBJECTS[key];
+// state = { key, color: s.color, difficulty: null, questions: withAnsweredFilters(s.build()), index: 0, correct: 0, streak: 0 };
