@@ -25,6 +25,40 @@ function buildUnique(count, genOne, maxTries) {
     return out;
 }
 
+function getQuestionKey(question) {
+    if (!question) return '';
+    return question._key !== undefined ? String(question._key) : String(question.prompt);
+}
+
+function getProfileAnsweredQuestionKeys() {
+    const p = activeProfile();
+    if (!p) return new Set();
+
+    p.answeredQuestions = Array.isArray(p.answeredQuestions) ? p.answeredQuestions : [];
+    return new Set(p.answeredQuestions);
+}
+
+function filterAnsweredQuestions(questions) {
+    const answered = getProfileAnsweredQuestionKeys();
+    if (!answered.size || !Array.isArray(questions)) return questions || [];
+
+    return questions.filter(q => !answered.has(getQuestionKey(q)));
+}
+
+function markQuestionAnswered(question) {
+    const p = activeProfile();
+    if (!p || !question) return;
+
+    p.answeredQuestions = Array.isArray(p.answeredQuestions) ? p.answeredQuestions : [];
+    const key = getQuestionKey(question);
+    if (!key) return;
+
+    const nextSet = new Set(p.answeredQuestions);
+    nextSet.add(key);
+    p.answeredQuestions = Array.from(nextSet);
+    persist();
+}
+
 function fitFont(text, base, min) {
     const len = String(text).replace(/<[^>]*>/g, "").length;
     let size = base - Math.max(0, len - 4) * 0.03;
@@ -127,6 +161,17 @@ function markQuestionAnswered(question) {
 
 function questionHTML() {
     const s = SUBJECTS[state.key];
+    let qset = subject.build(difficulty);
+    qset = filterAnsweredQuestions(qset);
+    state = {
+      key,
+      color: s.color,
+      difficulty,
+      questions: qset,
+      index: 0,
+      correct: 0,
+      streak: 0
+    };
     const q = state.questions[state.index];
     const pct = Math.round((state.index / state.questions.length) * 100);
     let stage = q.stageHTML ? `<div class="stage">${q.stageHTML}</div>` : "";
