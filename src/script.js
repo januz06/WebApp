@@ -246,13 +246,11 @@ function attachQuestion() {
             });
 
             if (isCorrect) {
-                state.correct++; state.streak = (state.streak || 0) + 1;
-                fb.textContent = pick(GOOD_PHRASES); fb.className = 'feedback good';
-                playCorrect();
+              state.correct++;
+              state.streak = (state.streak || 0) + 1;
+              markQuestionAnswered(q);
             } else {
-                state.streak = 0;
-                fb.textContent = pick(BAD_PHRASES); fb.className = 'feedback bad';
-                playWrong();
+              state.streak = 0;
             }
 
             markQuestionAnswered(q);
