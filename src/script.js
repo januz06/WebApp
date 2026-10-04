@@ -1,3 +1,21 @@
+const QUESTIONS_PER_SET = 20;
+const questionCache = new Map();
+
+function getCachedQuestionSet(builder, ...args) {
+    const cacheKey = JSON.stringify({ builder: builder.name || 'anonymous', args });
+    if (!questionCache.has(cacheKey)) {
+        questionCache.set(cacheKey, builder(...args));
+    }
+    return questionCache.get(cacheKey);
+}
+
+function getCachedSubjectQuestions(subjectKey, difficulty = null, language = null) {
+    const builder = SUBJECTS[subjectKey].build;
+    if (language) return getCachedQuestionSet(builder, language);
+    if (difficulty !== null) return getCachedQuestionSet(builder, difficulty);
+    return getCachedQuestionSet(builder);
+}
+
 function shuffle(arr) { return fisherYatesShuffle(arr); }
 
 function fisherYatesShuffle(arr) {
@@ -96,6 +114,7 @@ function attachQuestion() {
     const q = state.questions[state.index];
     const fb = document.getElementById('fb');
     const nextBtn = document.getElementById('nextBtn');
+    const optionsContainer = document.querySelector('.options');
     let locked = false;
     if (q.isWriting) {
         const writingInput = document.getElementById('writingInput');
@@ -111,13 +130,14 @@ function attachQuestion() {
         return;
     }
 
-    const optionButtons = Array.from(document.querySelectorAll('.opt'));
-    optionButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (locked) return;
+    if (optionsContainer) {
+        optionsContainer.addEventListener('click', (event) => {
+            const btn = event.target.closest('.opt');
+            if (!btn || locked) return;
             locked = true;
             const { val } = btn.dataset;
             const isCorrect = String(val) === String(q.answer);
+            const optionButtons = Array.from(document.querySelectorAll('.opt'));
             optionButtons.forEach(b => {
                 b.disabled = true;
                 if (String(b.dataset.val) === String(q.answer)) b.classList.add('correct');
@@ -134,8 +154,8 @@ function attachQuestion() {
             }
             saveSession();
             nextBtn.disabled = false;
-        });
-    });
+        }, { once: false });
+    }
 
     nextBtn.addEventListener('click', () => {
         state.index++;
