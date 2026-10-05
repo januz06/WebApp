@@ -35,7 +35,7 @@ function questionHTML() {
       ${stage}
       ${optionsBlock}
       <div class="feedback" id="fb"></div>
-      <button class="next-btn" id="nextBtn" style="background:${s.color}" disabled>Next</button>
+      ${!q.isWriting ? `<button class="next-btn" id="nextBtn" style="background:${s.color}" disabled>Next</button>` : ''}
     </div>
   `;
 }
