@@ -1,3 +1,21 @@
+import { signOut, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "./firebase-config.js";
+import { getDatabase, ref, set, get } from "firebase/database";
+
+const db = getDatabase();
+
+// ✅ Define the observer where the UI logic lives
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        initStorage(); 
+    } else {
+        activeProfileId = null;
+        profiles = [];
+        storageReady = false;
+        render(); 
+    }
+});
+
 /* ====== PERSISTENCE LAYER (Cleaner Structure) ====== */
 function persistProfile(profile = null) {
     const p = profile || activeProfile();
